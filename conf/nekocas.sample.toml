@@ -1,7 +1,12 @@
 httpport = 8000
-icp = "x-xxxxx"
+icp = ""
+salt = ""
+key = ""
 
 db_user = ""
 db_password = ""
 db_addr = "tcp(localhost:3306)"
 db_name = ""
+
+redis_addr = "127.0.0.1:6379"
+redis_password = ""
