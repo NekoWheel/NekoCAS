@@ -1,0 +1,7 @@
+httpport = 8000
+icp = "x-xxxxx"
+
+db_user = ""
+db_password = ""
+db_addr = "tcp(localhost:3306)"
+db_name = ""
