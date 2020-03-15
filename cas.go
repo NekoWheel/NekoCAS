@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -140,4 +142,93 @@ func (cas *cas) newServiceTicketCallBack(serviceURL *url.URL, userID uint, servi
 	query.Set("ticket", st)
 	serviceURL.RawQuery = query.Encode()
 	return serviceURL.String()
+}
+
+func (cas *cas) validateHandler(c *gin.Context) {
+	serviceQuery, _ := c.GetQuery("service")
+	serviceTicketQuery, ok := c.GetQuery("ticket")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Missing `ticket`.",
+		})
+		return
+	}
+
+	stDataString := cas.Redis.Get(serviceTicketQuery).Val()
+	cas.Redis.Del(serviceTicketQuery)
+	if stDataString == "" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Invalid ticket.",
+		})
+		return
+	}
+
+	stData := strings.Split(stDataString, "|")
+	if len(stData) != 2 {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Server error.",
+		})
+		return
+	}
+
+	// get service
+	serviceData := new(service)
+	cas.DB.Model(&service{}).Where("secret = ?", serviceQuery).Find(&serviceData)
+
+	userIDStr := stData[0]
+	serviceIDStr := stData[1]
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Server error.",
+		})
+		return
+	}
+	serviceID, err := strconv.Atoi(serviceIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Server error.",
+		})
+		return
+	}
+
+	if serviceData.ID != uint(serviceID) {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "Invalid service.",
+		})
+		return
+	}
+
+	userData := new(user)
+	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: uint(userID)}}).Find(&userData)
+	if userData.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "User not found.",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": gin.H{
+			"name":  userData.Name,
+			"email": userData.Email,
+			"token": userData.Token,
+		},
+		"message": "ok",
+	})
 }

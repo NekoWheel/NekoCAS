@@ -19,5 +19,7 @@ func (cas *cas) initRouter() {
 		login.POST("/", cas.loginActionHandler)
 	}
 
+	r.GET("/validate", cas.validateHandler)
+
 	panic(r.Run(":" + strconv.Itoa(cas.Conf.Port)))
 }
