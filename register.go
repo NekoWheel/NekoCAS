@@ -1,11 +1,19 @@
 package main
 
 import (
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/thanhpk/randstr"
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 )
+
+func (cas *cas) registerPreCheck(c *gin.Context) {
+	session := sessions.Default(c)
+	if session.Get("userID") != nil {
+		c.Redirect(302, "/")
+	}
+}
 
 func (cas *cas) registerViewHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.tmpl", gin.H{

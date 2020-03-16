@@ -19,9 +19,14 @@ func (cas *cas) initRouter() {
 		login.POST("/", cas.loginActionHandler)
 	}
 
+	register := r.Group("/register")
+	{
+		register.Use(cas.registerPreCheck)
+		register.GET("/register", cas.registerViewHandler)
+		register.POST("/register", cas.registerActionHandler)
+	}
+
 	r.GET("/validate", cas.validateHandler)
-	r.GET("/register", cas.registerViewHandler)
-	r.POST("/register", cas.registerActionHandler)
 
 	panic(r.Run(":" + strconv.Itoa(cas.Conf.Port)))
 }
