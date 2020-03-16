@@ -1,0 +1,23 @@
+{{template "header" .}}
+<div class="uk-container uk-container-xsmall uk-position-center">
+    <div class="uk-card uk-card-default">
+        <div class="uk-card-header">
+            <div class="uk-grid-small uk-flex-middle" uk-grid>
+                <div class="uk-width-auto">
+                    <img class="uk-border-circle" width="40" height="40" src="{{.avatar}}">
+                </div>
+                <div class="uk-width-expand">
+                    <h3 class="uk-card-title uk-margin-remove-bottom">{{.name}}</h3>
+                    <p class="uk-text-meta uk-margin-remove-top">{{.email}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="uk-card-body">
+            <p></p>
+        </div>
+        <div class="uk-card-footer">
+            <a href="#" class="uk-button uk-button-text"></a>
+        </div>
+    </div>
+</div>
+{{template "footer" .}}

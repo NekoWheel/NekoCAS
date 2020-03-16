@@ -2,7 +2,9 @@ package main
 
 import (
 	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"github.com/thanhpk/randstr"
 	"io"
@@ -48,4 +50,10 @@ func (cas *cas) getErrorMessage(field string, value ...interface{}) string {
 	value[0] = fieldName[field]
 	// TODO here is a not good method, change it later.
 	return strings.Split(fmt.Sprintf(tag, value...), "%")[0]
+}
+
+func (cas *cas) md5(str string) string {
+	hash := md5.New()
+	hash.Write([]byte(str))
+	return hex.EncodeToString(hash.Sum(nil))
 }

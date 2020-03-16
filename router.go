@@ -12,6 +12,8 @@ func (cas *cas) initRouter() {
 	r.HTMLRender = cas.loadTemplates("./templates")
 	r.Use(sessions.Sessions("session", memstore.NewStore([]byte(cas.Conf.Key))))
 
+	r.GET("/", cas.indexViewHandler)
+
 	login := r.Group("/login")
 	{
 		login.Use(cas.loginPreCheck)
@@ -22,8 +24,8 @@ func (cas *cas) initRouter() {
 	register := r.Group("/register")
 	{
 		register.Use(cas.registerPreCheck)
-		register.GET("/register", cas.registerViewHandler)
-		register.POST("/register", cas.registerActionHandler)
+		register.GET("/", cas.registerViewHandler)
+		register.POST("/", cas.registerActionHandler)
 	}
 
 	r.GET("/validate", cas.validateHandler)
