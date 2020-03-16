@@ -28,51 +28,48 @@ func (cas *cas) init() {
 }
 
 func (cas *cas) loginPreCheck(c *gin.Context) {
-	serviceQuery, ok := c.GetQuery("service")
-	if !ok {
-		c.HTML(http.StatusOK, "error.tmpl", gin.H{
-			"title":   "非法访问",
-			"message": "缺少请求参数 service",
-		})
-		c.Abort()
-		return
-	}
+	serviceQuery, _ := c.GetQuery("service")
+	if serviceQuery != "" {
+		serviceURL, err := url.ParseRequestURI(serviceQuery)
+		if err != nil {
+			c.HTML(http.StatusOK, "error.tmpl", gin.H{
+				"title":   "非法访问",
+				"message": "参数 service 无效",
+			})
+			c.Abort()
+			return
+		}
+		if serviceURL.Scheme != "https" {
+			c.HTML(http.StatusOK, "error.tmpl", gin.H{
+				"title":   "非法访问",
+				"message": "service 非 HTTPS 协议",
+			})
+			c.Abort()
+			return
+		}
 
-	serviceURL, err := url.ParseRequestURI(serviceQuery)
-	if err != nil {
-		c.HTML(http.StatusOK, "error.tmpl", gin.H{
-			"title":   "非法访问",
-			"message": "参数 service 无效",
-		})
-		c.Abort()
-		return
-	}
-	if serviceURL.Scheme != "https" {
-		c.HTML(http.StatusOK, "error.tmpl", gin.H{
-			"title":   "非法访问",
-			"message": "service 非 HTTPS 协议",
-		})
-		c.Abort()
-		return
-	}
+		// check service whitelist
+		trustDomain := new(domain)
+		cas.DB.Model(&domain{}).Where(&domain{Domain: serviceURL.Hostname()}).Find(&trustDomain)
+		if trustDomain.ID == 0 {
+			c.HTML(http.StatusOK, "error.tmpl", gin.H{
+				"title":   "非法访问",
+				"message": "域名不在白名单内",
+			})
+			c.Abort()
+			return
+		}
 
-	// check service whitelist
-	trustDomain := new(domain)
-	cas.DB.Model(&domain{}).Where(&domain{Domain: serviceURL.Hostname()}).Find(&trustDomain)
-	if trustDomain.ID == 0 {
-		c.HTML(http.StatusOK, "error.tmpl", gin.H{
-			"title":   "非法访问",
-			"message": "域名不在白名单内",
-		})
-		c.Abort()
-		return
+		// get service id
+		serviceData := new(service)
+		cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: trustDomain.ServiceID}}).Find(&serviceData)
+		c.Set("serviceID", int(serviceData.ID))
+		c.Set("serviceURL", serviceURL)
+	} else {
+		// login to cas
+		c.Set("serviceID", 0)
+		c.Set("serviceURL", &url.URL{})
 	}
-
-	// get service id
-	serviceData := new(service)
-	cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: trustDomain.ServiceID}}).Find(&serviceData)
-	c.Set("serviceID", serviceData.ID)
-	c.Set("serviceURL", serviceURL)
 	c.Next()
 }
 
@@ -80,13 +77,17 @@ func (cas *cas) loginViewHandler(c *gin.Context) {
 	// TODO 500 error handler
 	serviceURLInterface, _ := c.Get("serviceURL")
 	serviceURL, _ := serviceURLInterface.(*url.URL)
-	serviceIDInterface, _ := c.Get("serviceID")
-	serviceID, _ := serviceIDInterface.(uint)
+	serviceID := c.GetInt("serviceID")
 
+	// is login
 	session := sessions.Default(c)
 	if session.Get("userID") != nil {
-		userID := session.Get("userID").(uint)
-		c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, serviceID))
+		if serviceID == 0 {
+			c.Redirect(302, "/")
+		} else {
+			userID := session.Get("userID").(uint)
+			c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, serviceID))
+		}
 		return
 	}
 
@@ -99,8 +100,7 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 	// TODO 500 error handler
 	serviceURLInterface, _ := c.Get("serviceURL")
 	serviceURL, _ := serviceURLInterface.(*url.URL)
-	serviceIDInterface, _ := c.Get("serviceID")
-	serviceID, _ := serviceIDInterface.(uint)
+	serviceID := c.GetInt("serviceID")
 
 	loginForm := struct {
 		Email    string `form:"mail" binding:"required"`
@@ -128,10 +128,15 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 	session.Set("userID", u.ID)
 	_ = session.Save()
 
-	c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, u.ID, serviceID))
+	if serviceID == 0 {
+		c.Redirect(302, "/")
+	} else {
+		userID := session.Get("userID").(uint)
+		c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, serviceID))
+	}
 }
 
-func (cas *cas) newServiceTicketCallBack(serviceURL *url.URL, userID uint, serviceID uint) string {
+func (cas *cas) newServiceTicketCallBack(serviceURL *url.URL, userID uint, serviceID int) string {
 	// generate service ticket
 	st := cas.generateServiceToken()
 	// save the service ticket
@@ -156,6 +161,7 @@ func (cas *cas) validateHandler(c *gin.Context) {
 		return
 	}
 
+	// get ticket first
 	stDataString := cas.Redis.Get(serviceTicketQuery).Val()
 	cas.Redis.Del(serviceTicketQuery)
 	if stDataString == "" {
