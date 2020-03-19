@@ -1,0 +1,51 @@
+{{template "header" .}}
+<div class="uk-container uk-container-xsmall uk-position-center">
+    <div class="uk-card uk-card-default uk-width-large uk-card-small">
+        <div class="uk-card-header">
+            <div class="uk-grid-small uk-flex-middle" uk-grid>
+                <div class="uk-width-auto">
+                    <img class="uk-border-circle" width="50" height="50" src="{{.avatar}}">
+                </div>
+                <div class="uk-width-expand">
+                    <h3 class="uk-card-title uk-margin-remove-bottom">{{.name}}</h3>
+                    <p class="uk-text-meta uk-margin-remove-top">{{.email}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="uk-card-body">
+            {{ if ne .error "" }}
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>{{.error}}</p>
+                </div>
+            {{end}}
+            <form class="uk-form-stacked" method="post">
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">电子邮箱</label>
+                    <div class="uk-form-controls">
+                        {{.email}}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">昵称</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" name="name" type="text" value="{{.nameForm}}">
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">密码</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" name="password" type="password" placeholder="留空则不修改">
+                    </div>
+                </div>
+                <div class="uk-margin uk-text-center">
+                    <button type="submit" class="uk-button uk-button-primary">修改</button>
+                </div>
+            </form>
+        </div>
+        <div class="uk-card-footer">
+            <p><a href="/" class="uk-button uk-button-text"><span uk-icon="icon: chevron-left"></span>返回</a></p>
+        </div>
+    </div>
+</div>
+{{template "footer" .}}

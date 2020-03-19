@@ -4,21 +4,97 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/wuhan005/govalid"
 	"net/http"
 )
 
-func (cas *cas) indexViewHandler(c *gin.Context) {
+func (cas *cas) authRequired(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("userID") == nil {
 		c.Redirect(302, "/login")
+		c.Abort()
+		return
+	}
+	c.Set("userID", session.Get("userID"))
+	c.Next()
+}
+
+func (cas *cas) indexViewHandler(c *gin.Context) {
+	u := new(user)
+	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: c.MustGet("userID").(uint)}}).Find(&u)
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"error":  "",
+		"name":   u.Name,
+		"email":  u.Email,
+		"avatar": "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+	})
+}
+
+func (cas *cas) profileViewHandler(c *gin.Context) {
+	u := new(user)
+	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: c.MustGet("userID").(uint)}}).Find(&u)
+	c.HTML(http.StatusOK, "profile.tmpl", gin.H{
+		"error":    "",
+		"name":     u.Name,
+		"email":    u.Email,
+		"nameForm": u.Name,
+		"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+	})
+}
+
+func (cas *cas) profileActionHandler(c *gin.Context) {
+	u := new(user)
+	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: c.MustGet("userID").(uint)}}).Find(&u)
+
+	updateForm := struct {
+		Name     string `form:"name" valid:"required;minlen:5;maxlen:20" label:"昵称"`
+		Password string `form:"password" valid:"minlen:8;maxlen:30" label:"密码"`
+	}{}
+
+	errs := c.ShouldBind(&updateForm)
+	if errs != nil {
+		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
+			"error":    "数据格式不正确",
+			"name":     u.Name,
+			"email":    u.Email,
+			"nameForm": updateForm.Name,
+			"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+		})
+		return
+	}
+	// check form
+	v := govalid.New(updateForm)
+	if !v.Check() {
+		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
+			"error":    v.Errors[0].Message,
+			"name":     u.Name,
+			"email":    u.Email,
+			"nameForm": updateForm.Name,
+			"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+		})
 		return
 	}
 
-	u := new(user)
-	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: session.Get("userID").(uint)}}).Find(&u)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"name": u.Name,
-		"email": u.Email,
-		"avatar": "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
-	})
+	updateUser := user{
+		Name: updateForm.Name,
+	}
+	if updateForm.Password != "" {
+		updateUser.Password = cas.addSalt(updateForm.Password)
+	}
+
+	tx := cas.DB.Begin()
+	if tx.Model(&user{}).Where(&user{Model: gorm.Model{ID: u.ID}}).Update(&updateUser).RowsAffected != 1 {
+		tx.Rollback()
+		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
+			"error":    "服务器错误，修改失败！",
+			"name":     u.Name,
+			"email":    u.Email,
+			"nameForm": updateForm.Name,
+			"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+		})
+		return
+	}
+	tx.Commit()
+	c.Redirect(302, "/profile")
+	return
 }

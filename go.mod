@@ -11,7 +11,7 @@ require (
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/syssam/go-validator v0.0.0-20200218071333-196c8d6df070
 	github.com/thanhpk/randstr v1.0.4
+	github.com/wuhan005/govalid v0.0.0-20200319165329-f52f570f2653
 	gopkg.in/go-playground/validator.v9 v9.31.0
 )

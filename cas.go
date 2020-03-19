@@ -228,13 +228,19 @@ func (cas *cas) validateHandler(c *gin.Context) {
 		return
 	}
 
+	// in order to make every app get the different token.
+	token := cas.hmacSha1Encode(userData.Token, serviceData.Secret)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
 			"name":  userData.Name,
 			"email": userData.Email,
-			"token": userData.Token,
+			"token": token,
 		},
 		"message": "ok",
 	})
+}
+
+func (cas *cas) logoutHandler(c *gin.Context) {
+
 }

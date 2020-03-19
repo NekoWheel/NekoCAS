@@ -12,18 +12,24 @@ func (cas *cas) initRouter() {
 	r.HTMLRender = cas.loadTemplates("./templates")
 	r.Use(sessions.Sessions("session", memstore.NewStore([]byte(cas.Conf.Key))))
 
-	r.GET("/", cas.indexViewHandler)
+	authorized := r.Group("/")
+	authorized.Use(cas.authRequired)
+	{
+		authorized.GET("/", cas.indexViewHandler)
+		authorized.GET("/profile", cas.profileViewHandler)
+		authorized.POST("/profile", cas.profileActionHandler)
+	}
 
 	login := r.Group("/login")
+	login.Use(cas.loginPreCheck)
 	{
-		login.Use(cas.loginPreCheck)
 		login.GET("/", cas.loginViewHandler)
 		login.POST("/", cas.loginActionHandler)
 	}
 
 	register := r.Group("/register")
+	register.Use(cas.registerPreCheck)
 	{
-		register.Use(cas.registerPreCheck)
 		register.GET("/", cas.registerViewHandler)
 		register.POST("/", cas.registerActionHandler)
 	}

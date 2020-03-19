@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/thanhpk/randstr"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/wuhan005/govalid"
 	"net/http"
 )
 
@@ -23,17 +23,26 @@ func (cas *cas) registerViewHandler(c *gin.Context) {
 
 func (cas *cas) registerActionHandler(c *gin.Context) {
 	registerForm := struct {
-		Mail     string `form:"mail" binding:"required,email,max=30"`
-		Name     string `form:"name" binding:"required,min=5,max=20"`
-		Password string `form:"password" binding:"required,min=8,max=30"`
+		Mail     string `form:"mail" valid:"required;email;maxlen=30"`
+		Name     string `form:"name" valid:"required;minlen=5;maxlen=20" label:"昵称"`
+		Password string `form:"password" valid:"required;minlen=8;maxlen=30" label:"密码"`
 	}{}
 
 	// check form
-	errs := c.ShouldBind(&registerForm)
-	if errs != nil {
-		err := errs.(validator.ValidationErrors)[0]
+	err := c.ShouldBind(&registerForm)
+	if err != nil {
 		c.HTML(http.StatusOK, "register.tmpl", gin.H{
-			"error": cas.getErrorMessage(err.Field(), err.Tag(), err.Value()),
+			"error": "数据格式不正确",
+			"name":  registerForm.Name,
+			"mail":  registerForm.Mail,
+		})
+		return
+	}
+	// check form
+	v := govalid.New(registerForm)
+	if !v.Check() {
+		c.HTML(http.StatusOK, "register.tmpl", gin.H{
+			"error": v.Errors[0].Message,
 			"name":  registerForm.Name,
 			"mail":  registerForm.Mail,
 		})
