@@ -19,6 +19,7 @@
                 </div>
             {{end}}
             <form class="uk-form-stacked" method="post">
+                <input name="_csrf" value="{{._csrf}}" hidden>
                 <div class="uk-margin">
                     <label class="uk-form-label" for="form-stacked-text">电子邮箱</label>
                     <div class="uk-form-controls">

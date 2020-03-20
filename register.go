@@ -17,6 +17,7 @@ func (cas *cas) registerPreCheck(c *gin.Context) {
 
 func (cas *cas) registerViewHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.tmpl", gin.H{
+		"_csrf": c.GetString("_csrf"),
 		"error": "",
 	})
 }

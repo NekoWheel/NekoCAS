@@ -1,17 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
-	"github.com/wuhan005/govalid"
+	"github.com/thanhpk/randstr"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type cas struct {
@@ -26,137 +23,6 @@ func (cas *cas) init() {
 	cas.initRedis()
 	cas.initDatabase()
 	cas.initRouter()
-}
-
-func (cas *cas) loginPreCheck(c *gin.Context) {
-	serviceQuery, _ := c.GetQuery("service")
-	if serviceQuery != "" {
-		serviceURL, err := url.ParseRequestURI(serviceQuery)
-		if err != nil {
-			c.HTML(http.StatusOK, "error.tmpl", gin.H{
-				"title":   "非法访问",
-				"message": "参数 service 无效",
-			})
-			c.Abort()
-			return
-		}
-		if serviceURL.Scheme != "https" {
-			c.HTML(http.StatusOK, "error.tmpl", gin.H{
-				"title":   "非法访问",
-				"message": "service 非 HTTPS 协议",
-			})
-			c.Abort()
-			return
-		}
-
-		// check service whitelist
-		trustDomain := new(domain)
-		cas.DB.Model(&domain{}).Where(&domain{Domain: serviceURL.Hostname()}).Find(&trustDomain)
-		if trustDomain.ID == 0 {
-			c.HTML(http.StatusOK, "error.tmpl", gin.H{
-				"title":   "非法访问",
-				"message": "域名不在白名单内",
-			})
-			c.Abort()
-			return
-		}
-
-		// get service id
-		serviceData := new(service)
-		cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: trustDomain.ServiceID}}).Find(&serviceData)
-		c.Set("serviceID", int(serviceData.ID))
-		c.Set("serviceURL", serviceURL)
-	} else {
-		// login to cas
-		c.Set("serviceID", 0)
-		c.Set("serviceURL", &url.URL{})
-	}
-	c.Next()
-}
-
-func (cas *cas) loginViewHandler(c *gin.Context) {
-	// TODO 500 error handler
-	serviceURLInterface, _ := c.Get("serviceURL")
-	serviceURL, _ := serviceURLInterface.(*url.URL)
-	serviceID := c.GetInt("serviceID")
-
-	// is login
-	session := sessions.Default(c)
-	if session.Get("userID") != nil {
-		if serviceID == 0 {
-			c.Redirect(302, "/")
-		} else {
-			userID := session.Get("userID").(uint)
-			c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, serviceID))
-		}
-		return
-	}
-
-	c.HTML(http.StatusOK, "login.tmpl", gin.H{
-		"error": "",
-	})
-}
-
-func (cas *cas) loginActionHandler(c *gin.Context) {
-	// TODO 500 error handler
-	serviceURLInterface, _ := c.Get("serviceURL")
-	serviceURL, _ := serviceURLInterface.(*url.URL)
-	serviceID := c.GetInt("serviceID")
-
-	loginForm := struct {
-		Email    string `form:"mail" valid:"required"`
-		Password string `form:"password" valid:"required"`
-	}{}
-
-	err := c.ShouldBind(&loginForm)
-	if err != nil {
-		c.Redirect(http.StatusMovedPermanently, "/login")
-		c.Abort()
-		return
-	}
-
-	v := govalid.New(loginForm)
-	if !v.Check() {
-		c.HTML(http.StatusOK, "login.tmpl", gin.H{
-			"error": "登录失败！电子邮箱或密码错误！",
-		})
-		c.Abort()
-		return
-	}
-
-	u := new(user)
-	cas.DB.Model(&user{}).Where(&user{Email: loginForm.Email}).Find(&u)
-	if u.ID == 0 || u.Password != cas.addSalt(loginForm.Password) {
-		c.HTML(http.StatusOK, "login.tmpl", gin.H{
-			"error": "登录失败！电子邮箱或密码错误！",
-		})
-		c.Abort()
-		return
-	}
-
-	session := sessions.Default(c)
-	session.Set("userID", u.ID)
-	_ = session.Save()
-
-	if serviceID == 0 {
-		c.Redirect(302, "/")
-	} else {
-		userID := session.Get("userID").(uint)
-		c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, serviceID))
-	}
-}
-
-func (cas *cas) newServiceTicketCallBack(serviceURL *url.URL, userID uint, serviceID int) string {
-	// generate service ticket
-	st := cas.generateServiceToken()
-	// save the service ticket
-	cas.Redis.Set(st, fmt.Sprintf("%d|%d", userID, serviceID), 5*time.Minute)
-
-	// add query data into url
-	query := serviceURL.Query()
-	query.Set("ticket", st)
-	serviceURL.RawQuery = query.Encode()
-	return serviceURL.String()
 }
 
 func (cas *cas) validateHandler(c *gin.Context) {
@@ -238,17 +104,60 @@ func (cas *cas) validateHandler(c *gin.Context) {
 		return
 	}
 
-	// in order to make every app get the different token.
-	token := cas.hmacSha1Encode(userData.Token, serviceData.Secret)
+	// every app get the different token.
+	auth := cas.getServiceAuth(serviceData.ID, userData.ID)
+	if auth.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"data":    nil,
+			"message": "No permission.",
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
 			"name":  userData.Name,
 			"email": userData.Email,
-			"token": token,
+			"token": auth.Token,
 		},
 		"message": "ok",
 	})
+}
+
+func (cas *cas) authorizeHandler(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
+	serviceURL, ok := c.GetPostForm("serviceURL")
+	if !ok {
+		c.Redirect(302, "/")
+		return
+	}
+	serviceData, err := cas.getServiceByURL(serviceURL)
+	if err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	auth := new(serviceAuth)
+	cas.DB.Model(&serviceAuth{}).Where(&serviceAuth{
+		ServiceID: serviceData.ID,
+		UserID:    userID,
+	}).Find(&auth)
+	if auth.ID == 0 {
+		tx := cas.DB.Begin()
+		if tx.Create(&serviceAuth{
+			ServiceID: serviceData.ID,
+			UserID:    userID,
+			Token:     randstr.String(32),
+		}).RowsAffected != 1 {
+			tx.Rollback()
+			c.Redirect(302, "/")
+			return
+		}
+		tx.Commit()
+	}
+	c.Redirect(302, cas.newServiceTicketCallBack(serviceURL, userID, int(serviceData.ID)))
+	return
 }
 
 func (cas *cas) logoutHandler(c *gin.Context) {

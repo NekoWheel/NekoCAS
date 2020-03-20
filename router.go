@@ -11,30 +11,23 @@ func (cas *cas) initRouter() {
 	r := gin.Default()
 	r.HTMLRender = cas.loadTemplates("./templates")
 	r.Use(sessions.Sessions("session", memstore.NewStore([]byte(cas.Conf.Key))))
+	r.Use(cas.csrfMiddleware)
 
+	// register, middleware prevent register after login.
+	r.GET("/register", cas.registerPreCheck, cas.registerViewHandler)
+	r.POST("/register", cas.registerPreCheck, cas.registerActionHandler)
+
+	// login, middleware check the service data if exists.
+	r.GET("/login", cas.loginPreCheck, cas.loginViewHandler)
+	r.POST("/login", cas.loginPreCheck, cas.loginActionHandler)
 	r.GET("/logout", cas.logoutHandler)
 
-	authorized := r.Group("/")
-	authorized.Use(cas.authRequired)
-	{
-		authorized.GET("/", cas.indexViewHandler)
-		authorized.GET("/profile", cas.profileViewHandler)
-		authorized.POST("/profile", cas.profileActionHandler)
-	}
+	// service first time login, ask user for permission.
+	r.POST("/authorize", cas.authRequired, cas.authorizeHandler)
 
-	login := r.Group("/login")
-	login.Use(cas.loginPreCheck)
-	{
-		login.GET("/", cas.loginViewHandler)
-		login.POST("/", cas.loginActionHandler)
-	}
-
-	register := r.Group("/register")
-	register.Use(cas.registerPreCheck)
-	{
-		register.GET("/", cas.registerViewHandler)
-		register.POST("/", cas.registerActionHandler)
-	}
+	r.GET("/", cas.authRequired, cas.indexViewHandler)
+	r.GET("/profile", cas.authRequired, cas.profileViewHandler)
+	r.POST("/profile", cas.authRequired, cas.profileActionHandler)
 
 	r.GET("/validate", cas.validateHandler)
 

@@ -28,3 +28,10 @@ type domain struct {
 	Domain    string
 	ServiceID uint
 }
+
+type serviceAuth struct {
+	gorm.Model
+	ServiceID uint
+	UserID    uint
+	Token     string
+}
