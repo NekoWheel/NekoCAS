@@ -1,22 +1,24 @@
 {{template "header" .}}
 <div class="uk-position-center">
-    <div class="uk-card uk-card-default uk-card-body uk-width-large uk-card-small">
-        <div class="uk-card-header">
-            <h3 class="uk-card-title uk-margin-remove-bottom uk-text-center">授权 {{.serviceName}}</h3>
-        </div>
-        <div class="uk-card-body">
-            <form action="/authorize" method="post">
+    <form action="/authorize" method="post">
+        <div class="uk-card uk-card-default uk-card-body uk-width-large uk-card-small">
+            <div class="uk-card-header">
+                <h3 class="uk-card-title uk-margin-remove-bottom uk-text-center">授权 {{.serviceName}}</h3>
+            </div>
+            <div class="uk-card-body">
+                <dl class="uk-description-list uk-description-list-divider">
+                    <dt>您的基本信息</dt>
+                    <dd class="uk-text-muted uk-text-small">用户名、邮箱等信息</dd>
+                </dl>
                 <input name="_csrf" value="{{._csrf}}" hidden>
                 <input name="serviceURL" value="{{.serviceURL}}" hidden>
+            </div>
+            <div class="uk-card-footer">
                 <div class="uk-margin uk-text-center">
-                    <button type="submit" class="uk-button uk-button-primary">确认授权</button>
+                    <button type="submit" class="uk-button uk-button-primary">确认授权登录 {{.serviceName}}</button>
                 </div>
-                <p></p>
-            </form>
+            </div>
         </div>
-        <div class="uk-card-footer">
-
-        </div>
-    </div>
+    </form>
 </div>
 {{template "footer" .}}
