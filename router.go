@@ -12,6 +12,8 @@ func (cas *cas) initRouter() {
 	r.HTMLRender = cas.loadTemplates("./templates")
 	r.Use(sessions.Sessions("session", memstore.NewStore([]byte(cas.Conf.Key))))
 
+	r.GET("/logout", cas.logoutHandler)
+
 	authorized := r.Group("/")
 	authorized.Use(cas.authRequired)
 	{

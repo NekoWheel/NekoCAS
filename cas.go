@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
+	"github.com/wuhan005/govalid"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -103,13 +104,22 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 	serviceID := c.GetInt("serviceID")
 
 	loginForm := struct {
-		Email    string `form:"mail" binding:"required"`
-		Password string `form:"password" binding:"required"`
+		Email    string `form:"mail" valid:"required"`
+		Password string `form:"password" valid:"required"`
 	}{}
 
 	err := c.ShouldBind(&loginForm)
 	if err != nil {
 		c.Redirect(http.StatusMovedPermanently, "/login")
+		c.Abort()
+		return
+	}
+
+	v := govalid.New(loginForm)
+	if !v.Check() {
+		c.HTML(http.StatusOK, "login.tmpl", gin.H{
+			"error": "登录失败！电子邮箱或密码错误！",
+		})
 		c.Abort()
 		return
 	}
@@ -242,5 +252,8 @@ func (cas *cas) validateHandler(c *gin.Context) {
 }
 
 func (cas *cas) logoutHandler(c *gin.Context) {
-
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+	c.Redirect(302, "/login")
 }
