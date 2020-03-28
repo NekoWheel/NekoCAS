@@ -34,6 +34,7 @@ func (cas *cas) registerActionHandler(c *gin.Context) {
 	if err != nil {
 		c.HTML(http.StatusOK, "register.tmpl", gin.H{
 			"error": "数据格式不正确",
+			"_csrf": c.GetString("_csrf"),
 			"name":  registerForm.Name,
 			"mail":  registerForm.Mail,
 		})
@@ -44,6 +45,7 @@ func (cas *cas) registerActionHandler(c *gin.Context) {
 	if !v.Check() {
 		c.HTML(http.StatusOK, "register.tmpl", gin.H{
 			"error": v.Errors[0].Message,
+			"_csrf": c.GetString("_csrf"),
 			"name":  registerForm.Name,
 			"mail":  registerForm.Mail,
 		})
@@ -55,6 +57,7 @@ func (cas *cas) registerActionHandler(c *gin.Context) {
 	if u.ID != 0 {
 		c.HTML(http.StatusOK, "register.tmpl", gin.H{
 			"error": "该电子邮箱已经注册过了！",
+			"_csrf": c.GetString("_csrf"),
 			"email": registerForm.Mail,
 			"name":  registerForm.Name,
 		})

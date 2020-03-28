@@ -49,7 +49,7 @@ func (cas *cas) loginViewHandler(c *gin.Context) {
 				serviceData := new(service)
 				cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: uint(serviceID)}}).Find(&serviceData)
 				c.HTML(http.StatusOK, "authorize.tmpl", gin.H{
-					"_csrf": c.GetString("_csrf"),
+					"_csrf":       c.GetString("_csrf"),
 					"serviceName": serviceData.Name,
 					"serviceURL":  serviceURL,
 				})
@@ -86,6 +86,7 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 	if !v.Check() {
 		c.HTML(http.StatusOK, "login.tmpl", gin.H{
 			"error": "登录失败！电子邮箱或密码错误！",
+			"_csrf": c.GetString("_csrf"),
 		})
 		c.Abort()
 		return
@@ -96,6 +97,7 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 	if u.ID == 0 || u.Password != cas.addSalt(loginForm.Password) {
 		c.HTML(http.StatusOK, "login.tmpl", gin.H{
 			"error": "登录失败！电子邮箱或密码错误！",
+			"_csrf": c.GetString("_csrf"),
 		})
 		c.Abort()
 		return
@@ -115,7 +117,7 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 			cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: uint(serviceID)}}).Find(&serviceData)
 			// service first time login, ask user for permission.
 			c.HTML(http.StatusOK, "authorize.tmpl", gin.H{
-				"_csrf": c.GetString("_csrf"),
+				"_csrf":       c.GetString("_csrf"),
 				"serviceName": serviceData.Name,
 				"serviceURL":  serviceURL,
 			})
