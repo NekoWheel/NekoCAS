@@ -24,9 +24,9 @@ func (cas *cas) registerViewHandler(c *gin.Context) {
 
 func (cas *cas) registerActionHandler(c *gin.Context) {
 	registerForm := struct {
-		Mail     string `form:"mail" valid:"required;email;maxlen=30"`
-		Name     string `form:"name" valid:"required;minlen=5;maxlen=20" label:"昵称"`
-		Password string `form:"password" valid:"required;minlen=8;maxlen=30" label:"密码"`
+		Mail     string `form:"mail" valid:"required;email;maxlen:30"`
+		Name     string `form:"name" valid:"required;minlen:5;maxlen:20" label:"昵称"`
+		Password string `form:"password" valid:"required;minlen:8;maxlen:30" label:"密码"`
 	}{}
 
 	// check form
