@@ -102,6 +102,8 @@ github.com/wuhan005/govalid v0.0.0-20200319092020-dc09332bc4c8 h1:CHrR2NS+TGSJul
 github.com/wuhan005/govalid v0.0.0-20200319092020-dc09332bc4c8/go.mod h1:/Jd4qkjCpB0wAH/VlZlIPHfOkMaHTStzcVTRzYWmm7A=
 github.com/wuhan005/govalid v0.0.0-20200319165329-f52f570f2653 h1:z91NLoBCOZgF7//E7UZt0pGf8wtSCRrx/m3XnkhOxT0=
 github.com/wuhan005/govalid v0.0.0-20200319165329-f52f570f2653/go.mod h1:/Jd4qkjCpB0wAH/VlZlIPHfOkMaHTStzcVTRzYWmm7A=
+github.com/wuhan005/govalid v0.0.0-20200323121644-e230a0007b1f h1:CAE0gatas+NaNLiP9fdgLOnPv9ClzvvgVnUlpGRLibM=
+github.com/wuhan005/govalid v0.0.0-20200323121644-e230a0007b1f/go.mod h1:/Jd4qkjCpB0wAH/VlZlIPHfOkMaHTStzcVTRzYWmm7A=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd h1:GGJVjV8waZKRHrgwvtH66z9ZGVurTD1MT0n1Bb+q4aM=

@@ -12,6 +12,6 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/thanhpk/randstr v1.0.4
-	github.com/wuhan005/govalid v0.0.0-20200319165329-f52f570f2653
+	github.com/wuhan005/govalid v0.0.0-20200323121644-e230a0007b1f
 	gopkg.in/go-playground/validator.v9 v9.31.0
 )
