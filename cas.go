@@ -160,6 +160,24 @@ func (cas *cas) authorizeHandler(c *gin.Context) {
 	return
 }
 
+func (cas *cas) revoke(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
+	serviceIDStr := c.PostForm("id")
+	serviceID, err := strconv.Atoi(serviceIDStr)
+	if err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	tx := cas.DB.Begin()
+	if tx.Where("service_id = ? AND user_id = ?", serviceID, userID).Delete(&serviceAuth{}).RowsAffected != 1 {
+		tx.Rollback()
+		c.Redirect(302, "/")
+		return
+	}
+	tx.Commit()
+	c.Redirect(302, "/")
+}
+
 func (cas *cas) logoutHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()

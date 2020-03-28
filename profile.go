@@ -22,11 +22,25 @@ func (cas *cas) authRequired(c *gin.Context) {
 func (cas *cas) indexViewHandler(c *gin.Context) {
 	u := new(user)
 	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: c.MustGet("userID").(uint)}}).Find(&u)
+
+	// get service
+	auths := make([]serviceAuth, 0)
+	cas.DB.Model(&serviceAuth{}).Where(&serviceAuth{UserID: u.ID}).Find(&auths)
+	authIDs := make([]uint, len(auths))
+	for index, auth := range auths {
+		authIDs[index] = auth.ServiceID
+	}
+	services := make([]service, 0)
+	cas.DB.Model(&service{}).Where("id in (?)", authIDs).Find(&services)
+
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"error":  "",
-		"name":   u.Name,
-		"email":  u.Email,
-		"avatar": "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+		"error":    "",
+		"_csrf":    c.GetString("_csrf"),
+		"name":     u.Name,
+		"email":    u.Email,
+		"services": services,
+		"auths":    auths,
+		"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
 	})
 }
 
@@ -35,7 +49,7 @@ func (cas *cas) profileViewHandler(c *gin.Context) {
 	cas.DB.Model(&user{}).Where(&user{Model: gorm.Model{ID: c.MustGet("userID").(uint)}}).Find(&u)
 	c.HTML(http.StatusOK, "profile.tmpl", gin.H{
 		"error":    "",
-		"_csrf": c.GetString("_csrf"),
+		"_csrf":    c.GetString("_csrf"),
 		"name":     u.Name,
 		"email":    u.Email,
 		"nameForm": u.Name,
@@ -56,7 +70,7 @@ func (cas *cas) profileActionHandler(c *gin.Context) {
 	if errs != nil {
 		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
 			"error":    "数据格式不正确",
-			"_csrf": c.GetString("_csrf"),
+			"_csrf":    c.GetString("_csrf"),
 			"name":     u.Name,
 			"email":    u.Email,
 			"nameForm": updateForm.Name,
@@ -69,7 +83,7 @@ func (cas *cas) profileActionHandler(c *gin.Context) {
 	if !v.Check() {
 		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
 			"error":    v.Errors[0].Message,
-			"_csrf": c.GetString("_csrf"),
+			"_csrf":    c.GetString("_csrf"),
 			"name":     u.Name,
 			"email":    u.Email,
 			"nameForm": updateForm.Name,
@@ -90,7 +104,7 @@ func (cas *cas) profileActionHandler(c *gin.Context) {
 		tx.Rollback()
 		c.HTML(http.StatusOK, "profile.tmpl", gin.H{
 			"error":    "服务器错误，修改失败！",
-			"_csrf": c.GetString("_csrf"),
+			"_csrf":    c.GetString("_csrf"),
 			"name":     u.Name,
 			"email":    u.Email,
 			"nameForm": updateForm.Name,

@@ -20,10 +20,11 @@ func (cas *cas) initRouter() {
 	// login, middleware check the service data if exists.
 	r.GET("/login", cas.loginPreCheck, cas.loginViewHandler)
 	r.POST("/login", cas.loginPreCheck, cas.loginActionHandler)
-	r.GET("/logout", cas.logoutHandler)
+	r.POST("/logout", cas.logoutHandler)
 
 	// service first time login, ask user for permission.
 	r.POST("/authorize", cas.authRequired, cas.authorizeHandler)
+	r.POST("/revoke", cas.authRequired, cas.revoke)
 
 	r.GET("/", cas.authRequired, cas.indexViewHandler)
 	r.GET("/profile", cas.authRequired, cas.profileViewHandler)

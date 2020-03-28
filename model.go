@@ -21,6 +21,7 @@ type service struct {
 	gorm.Model
 	Name   string
 	Secret string
+	Avatar string
 }
 
 type domain struct {
