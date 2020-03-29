@@ -34,13 +34,14 @@ func (cas *cas) indexViewHandler(c *gin.Context) {
 	cas.DB.Model(&service{}).Where("id in (?)", authIDs).Find(&services)
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"error":    "",
-		"_csrf":    c.GetString("_csrf"),
-		"name":     u.Name,
-		"email":    u.Email,
-		"services": services,
-		"auths":    auths,
-		"avatar":   "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
+		"error":      "",
+		"_csrf":      c.GetString("_csrf"),
+		"name":       u.Name,
+		"email":      u.Email,
+		"permission": u.Permission,
+		"services":   services,
+		"auths":      auths,
+		"avatar":     "https://cdn.v2ex.com/gravatar/" + cas.md5(u.Email),
 	})
 }
 

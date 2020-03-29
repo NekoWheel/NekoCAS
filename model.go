@@ -4,10 +4,11 @@ import "github.com/jinzhu/gorm"
 
 type user struct {
 	gorm.Model
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"-"`
-	Token    string `json:"token"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Password   string `json:"-"`
+	Token      string `json:"token"`
+	Permission int    `json:"permission"`
 }
 
 type serviceTicket struct {

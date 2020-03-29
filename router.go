@@ -30,6 +30,9 @@ func (cas *cas) initRouter() {
 	r.GET("/profile", cas.authRequired, cas.profileViewHandler)
 	r.POST("/profile", cas.authRequired, cas.profileActionHandler)
 
+	// manager
+	r.GET("/manage", cas.authRequired, cas.adminRequired, cas.managerViewHandler)
+
 	r.GET("/validate", cas.validateHandler)
 
 	panic(r.Run(":" + strconv.Itoa(cas.Conf.Port)))
