@@ -11,18 +11,12 @@ type user struct {
 	Permission int    `json:"permission"`
 }
 
-type serviceTicket struct {
-	gorm.Model
-	AppID  uint
-	Ticket string
-	UserID uint
-}
-
 type service struct {
 	gorm.Model
 	Name   string
 	Secret string
 	Avatar string
+	Ban    bool
 }
 
 type domain struct {

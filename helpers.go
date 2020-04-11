@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/thanhpk/randstr"
 	"io"
 	"net/url"
@@ -82,7 +81,10 @@ func (cas *cas) getServiceByURL(urlStr string) (*service, error) {
 
 	// get service id
 	serviceData := new(service)
-	cas.DB.Model(&service{}).Where(&service{Model: gorm.Model{ID: trustDomain.ServiceID}}).Find(&serviceData)
+	cas.DB.Model(&service{}).Where("id = ? and ban = ?", trustDomain.ServiceID, false).Find(&serviceData)
+	if serviceData.ID == 0 {
+		return nil, errors.New("域名不在白名单内")
+	}
 	return serviceData, nil
 }
 

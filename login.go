@@ -105,6 +105,7 @@ func (cas *cas) loginActionHandler(c *gin.Context) {
 
 	session := sessions.Default(c)
 	session.Set("userID", u.ID)
+	session.Set("userType", u.Permission)
 	_ = session.Save()
 
 	if serviceID == 0 {

@@ -21,5 +21,5 @@ func (cas *cas) initDatabase() {
 	}
 	cas.DB = db
 
-	cas.DB.AutoMigrate(&user{}, &serviceTicket{}, &service{}, &domain{}, &serviceAuth{})
+	cas.DB.AutoMigrate(&user{}, &service{}, &domain{}, &serviceAuth{})
 }

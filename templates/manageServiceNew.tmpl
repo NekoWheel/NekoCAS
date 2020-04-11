@@ -1,0 +1,47 @@
+{{template "header" .}}
+<div class="uk-container uk-container-xlarge uk-position-center">
+    <div class="uk-card uk-card-default uk-card-body uk-card-small" style="width: 700px;">
+        <div class="uk-card-header">
+            <div class="uk-grid-small uk-flex-middle" uk-grid>
+                <h3>新建服务</h3>
+            </div>
+        </div>
+        <div class="">
+            {{ if ne .error "" }}
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>{{.error}}</p>
+                </div>
+            {{end}}
+            <form class="uk-form-stacked" method="post">
+                <input name="_csrf" value="{{._csrf}}" hidden>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">服务名</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" name="name" type="text" value="{{.name}}">
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">Logo 外链</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" name="avatar" type="text" value="{{.avatar}}">
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">白名单域名</label>
+                    <div class="uk-form-controls">
+                        <textarea name="domain" class="uk-textarea"></textarea>
+                    </div>
+                    <span class="uk-text-muted">一行一个域名，格式错误的将被忽略。</span>
+                </div>
+                <div class="uk-margin uk-text-center">
+                    <button type="submit" class="uk-button uk-button-primary">添加服务</button>
+                </div>
+            </form>
+        </div>
+        <div class="uk-card-footer">
+            <p><a href="/manage" class="uk-button uk-button-text"><span uk-icon="icon: chevron-left"></span>返回</a></p>
+        </div>
+    </div>
+</div>
+{{template "footer" .}}

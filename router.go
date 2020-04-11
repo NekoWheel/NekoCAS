@@ -22,18 +22,23 @@ func (cas *cas) initRouter() {
 	r.POST("/login", cas.loginPreCheck, cas.loginActionHandler)
 	r.POST("/logout", cas.logoutHandler)
 
-	// service first time login, ask user for permission.
-	r.POST("/authorize", cas.authRequired, cas.authorizeHandler)
-	r.POST("/revoke", cas.authRequired, cas.revoke)
-
 	r.GET("/", cas.authRequired, cas.indexViewHandler)
 	r.GET("/profile", cas.authRequired, cas.profileViewHandler)
 	r.POST("/profile", cas.authRequired, cas.profileActionHandler)
 
-	// manager
-	r.GET("/manage", cas.authRequired, cas.adminRequired, cas.managerViewHandler)
+	// service first time login, ask user for permission.
+	r.POST("/authorize", cas.authRequired, cas.authorizeHandler)
+	r.POST("/revoke", cas.authRequired, cas.revoke)
 
 	r.GET("/validate", cas.validateHandler)
+
+	// manager
+	manage := r.Group("/manage", cas.authRequired, cas.adminRequired)
+	manage.GET("/", cas.managerViewHandler)
+	manage.POST("/service/ban", cas.switchBanServiceHandler)
+	manage.POST("/service/delete", cas.deleteServiceHandler)
+	manage.GET("/service/new", cas.newServiceViewHandler)
+	manage.POST("/service/new", cas.newServiceHandler)
 
 	panic(r.Run(":" + strconv.Itoa(cas.Conf.Port)))
 }
