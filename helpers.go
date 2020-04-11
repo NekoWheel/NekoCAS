@@ -66,7 +66,7 @@ func (cas *cas) md5(str string) string {
 
 func (cas *cas) getServiceByURL(urlStr string) (*service, error) {
 	serviceURL, err := url.ParseRequestURI(urlStr)
-	if err != nil {
+	if err != nil || serviceURL.Hostname() == "" {
 		return nil, errors.New("参数无效")
 	}
 	if serviceURL.Scheme != "https" {
@@ -75,7 +75,7 @@ func (cas *cas) getServiceByURL(urlStr string) (*service, error) {
 
 	// check service whitelist
 	trustDomain := new(domain)
-	cas.DB.Model(&domain{}).Where(&domain{Domain: serviceURL.Hostname()}).Find(&trustDomain)
+	cas.DB.Model(&domain{}).Where("domain = ?", serviceURL.Hostname()).Find(&trustDomain)
 	if trustDomain.ID == 0 {
 		return nil, errors.New("域名不在白名单内")
 	}
