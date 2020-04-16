@@ -6,10 +6,11 @@ import (
 )
 
 type config struct {
-	Port int    `toml:"httpport"`
-	ICP  string `toml:"icp"`
-	Salt string `toml:"salt"`
-	Key  string `toml:"key"`
+	Port     int    `toml:"httpport"`
+	ICP      string `toml:"icp"`
+	Salt     string `toml:"salt"`
+	Key      string `toml:"key"`
+	Register bool   `toml:"register"`
 
 	DBUser     string `toml:"db_user"`
 	DBPassword string `toml:"db_password"`

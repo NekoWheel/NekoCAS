@@ -9,6 +9,12 @@ import (
 )
 
 func (cas *cas) registerPreCheck(c *gin.Context) {
+	// check open register
+	if !cas.Conf.Register {
+		c.Redirect(302, "/login")
+		return
+	}
+	
 	session := sessions.Default(c)
 	if session.Get("userID") != nil {
 		c.Redirect(302, "/")

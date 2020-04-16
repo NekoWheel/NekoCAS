@@ -35,9 +35,13 @@ func (cas *cas) adminRequired(c *gin.Context) {
 func (cas *cas) managerViewHandler(c *gin.Context) {
 	var services []service
 	cas.DB.Model(&service{}).Find(&services)
+	var users []user
+	cas.DB.Model(&user{}).Find(&users)
 	c.HTML(http.StatusOK, "manageIndex.tmpl", gin.H{
 		"_csrf":    c.GetString("_csrf"),
 		"services": services,
+		"users":    users,
+		"register": cas.Conf.Register,
 	})
 }
 

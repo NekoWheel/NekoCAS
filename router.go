@@ -40,5 +40,8 @@ func (cas *cas) initRouter() {
 	manage.GET("/service/new", cas.newServiceViewHandler)
 	manage.POST("/service/new", cas.newServiceHandler)
 
+	manage.POST("/user/admin", cas.setAdminHandler)
+	manage.POST("/user/delete", cas.deleteAdminHandler)
+
 	panic(r.Run(":" + strconv.Itoa(cas.Conf.Port)))
 }

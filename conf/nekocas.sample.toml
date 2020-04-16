@@ -2,6 +2,7 @@ httpport = 8000
 icp = ""
 salt = ""
 key = ""
+register = true
 
 db_user = ""
 db_password = ""
