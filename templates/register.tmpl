@@ -12,18 +12,14 @@
             </div>
         </div>
         <div class="uk-card-body">
-            {{ if ne .error "" }}
-                <div class="uk-alert-danger" uk-alert>
-                    <a class="uk-alert-close" uk-close></a>
-                    <p>{{.error}}</p>
-                </div>
-            {{end}}
+            {{template "layouts/alert" . }}
+
             <form class="uk-form-stacked" method="post">
-                <input name="_csrf" value="{{._csrf}}" hidden>
+                {{.CSRFTokenHTML}}
                 <div class="uk-margin">
                     <label class="uk-form-label" for="form-stacked-text">电子邮箱</label>
                     <div class="uk-form-controls">
-                        <input class="uk-input" name="mail" type="text" value="{{.email}}">
+                        <input class="uk-input" name="mail" type="text" value="{{.mail}}">
                     </div>
                 </div>
                 <div class="uk-margin">
@@ -36,6 +32,12 @@
                     <label class="uk-form-label" for="form-stacked-text">密码</label>
                     <div class="uk-form-controls">
                         <input class="uk-input" name="password" type="password">
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">重复密码</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" name="retype" type="password">
                     </div>
                 </div>
                 <div class="uk-margin uk-text-center">

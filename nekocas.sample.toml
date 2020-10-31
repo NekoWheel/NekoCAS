@@ -1,7 +1,8 @@
-httpport = 8000
+port = 8000
 icp = ""
 salt = ""
-key = ""
+session_key = ""
+csrf_key = ""
 register = true
 
 db_user = ""
