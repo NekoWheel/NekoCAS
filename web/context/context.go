@@ -67,7 +67,7 @@ func Contexter() macaron.Handler {
 			Session: sess,
 		}
 
-		// Get user from session
+		// 获取登录用户信息
 		c.User = authenticatedUser(c.Session)
 
 		if c.User != nil {

@@ -10,10 +10,31 @@ import (
 )
 
 func LoginViewHandler(c *context.Context) {
-	c.Success("login")
+	// TODO renew
+
+	if !c.IsLogged {
+		c.Success("login")
+		return
+	}
+
+	// 带有 ServiceURL，携带 Ticket 跳转到对应服务
+	if c.Service.ID != 0 {
+		redirectWithTicket(c)
+		return
+	}
+
+	// 未含 ServiceURL，跳转到首页
+	c.Redirect("/")
 }
 
 func LoginActionHandler(c *context.Context, f form.Login) {
+	// 已登录用户不允许再提交登录表单
+	if c.IsLogged {
+		c.Redirect("/", 302)
+		return
+	}
+
+	// 登录表单报错
 	if c.HasError() {
 		c.Success("login")
 		return
@@ -31,23 +52,26 @@ func LoginActionHandler(c *context.Context, f form.Login) {
 
 	// 携带 Ticket 跳转到对应服务
 	if c.Service.ID != 0 {
-		ticket, err := db.NewServiceTicket(c.Service, c.User)
-		if err != nil {
-			c.Error(err)
-			return
-		}
-		// 解析跳转 URL
-		redirectURL, err := url.Parse(c.ServiceURL)
-		if err != nil {
-			c.Error(errors.New("解析 URL 失败"))
-			return
-		}
-		query := redirectURL.Query()
-		query.Set("ticket", ticket)
-		redirectURL.RawQuery = query.Encode()
-		c.Redirect(redirectURL.String())
+		redirectWithTicket(c)
 		return
 	}
-
 	c.Redirect("/")
+}
+
+func redirectWithTicket(c *context.Context) {
+	ticket, err := db.NewServiceTicket(c.Service, c.User)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	// 解析跳转 URL
+	redirectURL, err := url.Parse(c.ServiceURL)
+	if err != nil {
+		c.Error(errors.New("解析 URL 失败"))
+		return
+	}
+	query := redirectURL.Query()
+	query.Set("ticket", ticket)
+	redirectURL.RawQuery = query.Encode()
+	c.Redirect(redirectURL.String())
 }

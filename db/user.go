@@ -7,22 +7,22 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/NekoWheel/NekoCAS/tool"
+	"github.com/NekoWheel/NekoCAS/helper"
 	"github.com/pkg/errors"
 	"github.com/thanhpk/randstr"
 	"golang.org/x/crypto/pbkdf2"
 	"gorm.io/gorm"
 )
 
+// User
 type User struct {
 	gorm.Model
 
-	Name       string
-	Email      string
-	Password   string
-	Salt       string
-	Avatar     string
-	Permission int
+	Name     string
+	Email    string
+	Password string
+	Salt     string
+	Avatar   string
 }
 
 // EncodePassword 密码加盐处理
@@ -60,7 +60,7 @@ func CreateUser(u *User) error {
 		return ErrEmailAlreadyUsed{arg: u.Email}
 	}
 
-	u.Avatar = tool.HashEmail(u.Email)
+	u.Avatar = helper.HashEmail(u.Email)
 	u.Salt = GetUserSalt()
 	u.EncodePassword()
 
@@ -73,6 +73,7 @@ func CreateUser(u *User) error {
 	return nil
 }
 
+// 用户验证
 func UserAuthenticate(email string, password string) (*User, error) {
 	user := new(User)
 	db.Model(&User{}).Where(&User{Email: email}).Find(&user)

@@ -3,7 +3,6 @@ package middleware
 import (
 	"github.com/NekoWheel/NekoCAS/db"
 	"github.com/NekoWheel/NekoCAS/web/context"
-	"github.com/NekoWheel/NekoCAS/web/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +15,7 @@ func OpenForRegister(c *gin.Context) {
 func ServicePreCheck(c *context.Context) {
 	serviceURL := c.Query("service")
 	if serviceURL == "" {
-		c.Service = service.Local()
+		c.Service = &db.Service{}
 		return
 	}
 

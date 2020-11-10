@@ -1,4 +1,4 @@
-package profile
+package account
 
 //
 //func (cas *cas) authRequired(c *gin.Context) {

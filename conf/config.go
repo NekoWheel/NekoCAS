@@ -1,4 +1,4 @@
-package config
+package conf
 
 import (
 	log "unknwon.dev/clog/v2"
@@ -12,13 +12,17 @@ type config struct {
 	SessionKey string `toml:"session_key"`
 	CSRFKey    string `toml:"csrf_key"`
 
-	DBUser     string `toml:"db_user"`
-	DBPassword string `toml:"db_password"`
-	DBAddr     string `toml:"db_addr"`
-	DBName     string `toml:"db_name"`
+	MySQL struct {
+		User     string `toml:"user"`
+		Password string `toml:"password"`
+		Addr     string `toml:"addr"`
+		Name     string `toml:"name"`
+	} `toml:"mysql"`
 
-	RedisAddr     string `toml:"redis_addr"`
-	RedisPassword string `toml:"redis_password"`
+	Redis struct {
+		Addr     string `toml:"addr"`
+		Password string `toml:"password"`
+	} `toml:"redis"`
 }
 
 var conf *config

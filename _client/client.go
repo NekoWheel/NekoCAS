@@ -8,17 +8,13 @@ import (
 	"net/url"
 
 	"github.com/golang/glog"
-	"gopkg.in/cas.v2"
+	"github.com/shenshouer/cas"
 )
 
 type myHandler struct{}
 
 var MyHandler = &myHandler{}
-var casURL string
-
-func init() {
-	casURL = "http://localhost:4000"
-}
+var casURL string = "http://localhost:4000"
 
 func main() {
 	glog.Info("Starting up")

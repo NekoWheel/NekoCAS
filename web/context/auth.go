@@ -11,7 +11,6 @@ import (
 type ToggleOptions struct {
 	SignInRequired  bool
 	SignOutRequired bool
-	AdminRequired   bool
 }
 
 func Toggle(options *ToggleOptions) macaron.Handler {
@@ -29,10 +28,6 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 				c.Redirect("/login")
 				return
 			}
-		}
-
-		if options.AdminRequired {
-			// TODO
 		}
 	}
 }

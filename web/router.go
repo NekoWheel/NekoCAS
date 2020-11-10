@@ -1,7 +1,9 @@
 package web
 
 import (
-	"github.com/NekoWheel/NekoCAS/config"
+	"github.com/NekoWheel/NekoCAS/conf"
+	v1 "github.com/NekoWheel/NekoCAS/spec/v1"
+	v2 "github.com/NekoWheel/NekoCAS/spec/v2"
 	"github.com/NekoWheel/NekoCAS/web/account"
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
@@ -15,6 +17,7 @@ import (
 func Run() {
 	r := macaron.Classic()
 
+	// 登录登出状态
 	reqSignIn := context.Toggle(&context.ToggleOptions{SignInRequired: true})
 	reqSignOut := context.Toggle(&context.ToggleOptions{SignOutRequired: true})
 
@@ -27,25 +30,36 @@ func Run() {
 	bindIgnErr := binding.BindIgnErr
 
 	r.Group("", func() {
+		// 登录前访问
 		r.Group("", func() {
 			r.Combo("/register").
 				Get(account.RegisterViewHandler).
 				Post(bindIgnErr(form.Register{}), account.RegisterActionHandler)
-			r.Combo("/login", middleware.ServicePreCheck).
-				Get(account.LoginViewHandler). // CAS Protocol
-				Post(bindIgnErr(form.Login{}), account.LoginActionHandler)
-			//r.Post("/login", middleware.ServicePreCheck, account.LoginActionHandler)
 		}, reqSignOut)
 
-		r.Get("/", reqSignIn)
+		// 无论是否已经登录都可以访问
+		r.Combo("/login", middleware.ServicePreCheck).
+			Get(account.LoginViewHandler).
+			Post(bindIgnErr(form.Login{}), account.LoginActionHandler)
 
+		// 登录后访问
+		r.Group("", func() {
+			r.Get("/")
+			r.Get("/logout", account.LogoutHandler)
+		}, reqSignIn)
+
+		// CAS 协议实现
+		r.Get("/validate", middleware.ServicePreCheck, v1.ValidateHandler)        // v1
+		r.Get("/serviceValidate", middleware.ServicePreCheck, v2.ValidateHandler) // v2
+		//r.Get("/proxy", )
+		//r.Get("/proxyValidate", )
 	},
 		session.Sessioner(session.Options{
 			CookieName: "nekocas",
 		}),
 
 		csrf.Csrfer(csrf.Options{
-			Secret: config.Get().CSRFKey,
+			Secret: conf.Get().CSRFKey,
 			Header: "X-CSRF-Token",
 		}),
 
