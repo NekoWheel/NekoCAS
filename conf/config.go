@@ -27,7 +27,7 @@ var conf *config
 
 func init() {
 	conf = new(config)
-	_, err := toml.DecodeFile("./nekocas.toml", &conf)
+	_, err := toml.DecodeFile("./config/nekocas.toml", &conf)
 	if err != nil {
 		log.Fatal("Failed to decode config file: %v", err)
 	}
