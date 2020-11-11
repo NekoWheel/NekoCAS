@@ -63,5 +63,5 @@ func Run() {
 
 		context.Contexter(),
 	)
-	r.Run()
+	r.Run("0.0.0.0", conf.Get().Port)
 }
