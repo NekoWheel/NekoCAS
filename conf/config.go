@@ -7,10 +7,8 @@ import (
 )
 
 type config struct {
-	Port       int    `toml:"port"`
-	Salt       string `toml:"salt"`
-	SessionKey string `toml:"session_key"`
-	CSRFKey    string `toml:"csrf_key"`
+	Port    int    `toml:"port"`
+	CSRFKey string `toml:"csrf_key"`
 
 	MySQL struct {
 		User     string `toml:"user"`

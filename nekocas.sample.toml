@@ -1,9 +1,6 @@
 port = 8000
 icp = ""
-salt = ""
-session_key = ""
 csrf_key = ""
-register = true
 
 db_user = ""
 db_password = ""

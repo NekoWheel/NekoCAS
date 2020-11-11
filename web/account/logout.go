@@ -12,6 +12,6 @@ func LogoutHandler(c *gin.Context) {
 	session := sessions.Get(c)
 	session.Clear()
 	_ = session.Save()
-	// TODO: logout.tpl
+
 	c.HTML(http.StatusOK, "logout.tpl", nil)
 }
