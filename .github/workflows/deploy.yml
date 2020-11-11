@@ -75,5 +75,6 @@ jobs:
           script: |
             docker rm -f NekoCAS || true
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+            docker rmi $DOCKER_NAME || true
             docker pull $DOCKER_NAME
             docker run -dt --name NekoCAS -e TZ=Asia/Shanghai -p 127.0.0.1:10001:8080 -v /home/neko/nekocas/conf:/home/app/conf --link mysql:mysql $DOCKER_NAME:latest
