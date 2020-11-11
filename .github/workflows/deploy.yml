@@ -77,4 +77,4 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
             docker rmi $DOCKER_NAME || true
             docker pull $DOCKER_NAME
-            docker run -dt --name NekoCAS -e TZ=Asia/Shanghai -p 127.0.0.1:10001:8080 -v /home/neko/nekocas/conf:/home/app/config --link mysql:mysql $DOCKER_NAME:latest
+            docker run -dt --name NekoCAS -e TZ=Asia/Shanghai -p 127.0.0.1:10001:8080 -v /home/neko/nekocas/conf:/home/app/config --link mysql:mysql --link redis:redis $DOCKER_NAME:latest
