@@ -1,11 +1,14 @@
 port = 8000
 icp = ""
+session_key = ""
 csrf_key = ""
 
-db_user = ""
-db_password = ""
-db_addr = "tcp(localhost:3306)"
-db_name = ""
+[mysql]
+user = ""
+password = ""
+addr = "tcp(localhost:3306)"
+name = ""
 
-redis_addr = "127.0.0.1:6379"
-redis_password = ""
+[redis]
+addr = "127.0.0.1:6379"
+password = ""
