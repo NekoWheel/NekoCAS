@@ -24,6 +24,7 @@ func RegisterActionHandler(c *context.Context, f form.Register) {
 
 	u := &db.User{
 		Name:     f.Name,
+		NickName: f.NickName,
 		Email:    f.Mail,
 		Password: f.Password,
 	}

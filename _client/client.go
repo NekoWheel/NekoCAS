@@ -14,7 +14,7 @@ import (
 type myHandler struct{}
 
 var MyHandler = &myHandler{}
-var casURL string = "http://localhost:4000"
+var casURL string = "http://localhost:8000"
 
 func main() {
 	glog.Info("Starting up")
@@ -28,7 +28,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    ":8000",
+		Addr:    ":8080",
 		Handler: client.Handle(m),
 	}
 

@@ -1,6 +1,10 @@
 package v2
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+
+	"github.com/NekoWheel/NekoCAS/db"
+)
 
 type CASServiceResponse struct {
 	XMLName      xml.Name `xml:"cas:serviceResponse"`
@@ -12,9 +16,9 @@ type CASServiceResponse struct {
 }
 
 type CASAuthenticationSuccess struct {
-	XMLName xml.Name `xml:"cas:authenticationSuccess"`
-	User    CASUser
-	PgtIou  CASPgtIou `xml:",omitempty"`
+	XMLName    xml.Name `xml:"cas:authenticationSuccess"`
+	User       CASUser
+	Attributes CASAttributes
 }
 
 type CASAuthenticationFailure struct {
@@ -31,6 +35,12 @@ type CASUser struct {
 type CASPgtIou struct {
 	XMLName xml.Name `xml:"cas:proxyGrantingTicket"`
 	Ticket  string   `xml:",chardata"`
+}
+
+type CASAttributes struct {
+	XMLName  xml.Name `xml:"cas:attributes"`
+	NickName string
+	Email    string
 }
 
 type CASProxySuccess struct {
@@ -51,12 +61,15 @@ func newCASResponse() CASServiceResponse {
 	}
 }
 
-// NewCASSuccessResponse 创建一个 CAS XML 成功返回，包含用户信息，Ticket
-func NewCASSuccessResponse(u string, pgtiou string) []byte {
+// NewCASSuccessResponse 创建一个 CAS XML 成功返回，包含用户信息
+func NewCASSuccessResponse(u *db.User) []byte {
 	s := newCASResponse()
 	s.Success = &CASAuthenticationSuccess{
-		User:   CASUser{User: u},
-		PgtIou: CASPgtIou{Ticket: pgtiou},
+		User: CASUser{User: u.Name},
+		Attributes: CASAttributes{
+			NickName: u.NickName,
+			Email:    u.Email,
+		},
 	}
 	x, _ := xml.Marshal(s)
 	return x

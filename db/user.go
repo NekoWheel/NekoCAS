@@ -19,6 +19,7 @@ type User struct {
 	gorm.Model
 
 	Name     string
+	NickName string
 	Email    string
 	Password string
 	Salt     string
@@ -139,7 +140,7 @@ func IsErrUserAlreadyExist(err error) bool {
 }
 
 func (err ErrUserAlreadyExist) Error() string {
-	return fmt.Sprintf("昵称已被使用: %v", err.arg)
+	return fmt.Sprintf("用户名已被使用: %v", err.arg)
 }
 
 type ErrEmailAlreadyUsed struct {
@@ -165,5 +166,5 @@ func IsErrNameNotAllowed(err error) bool {
 }
 
 func (err ErrNameNotAllowed) Error() string {
-	return fmt.Sprintf("昵称输入有误： %v", err.arg)
+	return fmt.Sprintf("用户名输入有误： %v", err.arg)
 }

@@ -25,5 +25,5 @@ func ValidateHandler(c *context.Context) {
 		return
 	}
 
-	c.PlainText(200, NewCASSuccessResponse(ticketUser.Name, ""))
+	c.PlainText(200, NewCASSuccessResponse(ticketUser))
 }
