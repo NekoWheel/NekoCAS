@@ -75,6 +75,9 @@ func Contexter() macaron.Handler {
 			c.Data["LoggedUser"] = c.User
 		}
 
+		// 后台菜单
+		c.Data["Tab"] = c.Flash.Get("Tab")
+
 		c.Data["CSRFToken"] = x.GetToken()
 		c.Data["CSRFTokenHTML"] = template.Safe(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
 		log.Trace("Session ID: %s", sess.ID())

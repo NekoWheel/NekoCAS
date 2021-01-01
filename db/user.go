@@ -89,6 +89,20 @@ func UserAuthenticate(email string, password string) (*User, error) {
 	return user, nil
 }
 
+// UpdateUserProfile 修改用户信息
+func UpdateUserProfile(u *User) error {
+	if u.Password != "" {
+		u.EncodePassword()
+	}
+
+	return db.Model(&User{}).Where(&User{
+		Model: gorm.Model{ID: u.ID},
+	}).Updates(&User{
+		NickName: u.NickName,
+		Password: u.Password,
+	}).Error
+}
+
 func GetUserByID(uid uint) *User {
 	var u User
 	db.Model(&User{}).Where(&User{

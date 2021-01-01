@@ -44,7 +44,7 @@ func Run() {
 
 		// 登录后访问
 		r.Group("", func() {
-			r.Get("/")
+			r.Combo("/").Get(account.ProfileViewHandler).Post(bindIgnErr(form.UpdateProfile{}), account.ProfileActionHandler)
 			r.Get("/logout", account.LogoutHandler)
 		}, reqSignIn)
 

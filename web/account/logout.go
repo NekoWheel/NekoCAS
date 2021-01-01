@@ -1,17 +1,11 @@
 package account
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-	"github.com/tommy351/gin-sessions"
+	"github.com/NekoWheel/NekoCAS/web/context"
 )
 
-func LogoutHandler(c *gin.Context) {
+func LogoutHandler(c *context.Context) {
 	// TODO: url
-	session := sessions.Get(c)
-	session.Clear()
-	_ = session.Save()
-
-	c.HTML(http.StatusOK, "logout.tpl", nil)
+	_ = c.Session.Destory(c.Context)
+	c.Success("logout")
 }

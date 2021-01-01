@@ -25,3 +25,13 @@ type Login struct {
 func (f *Login) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f)
 }
+
+type UpdateProfile struct {
+	NickName string `binding:"Required;MaxSize(20)" locale:"昵称"`
+	Password string `binding:"MaxSize(255)" locale:"密码"`
+	Retype   string
+}
+
+func (f *UpdateProfile) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f)
+}
