@@ -1,0 +1,49 @@
+{{template "header" .}}
+<body class="antialiased">
+<div class="page">
+    {{ template "layouts/bar" .}}
+    <div class="content">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            个人信息
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="avatar avatar-md"
+                              style="background-image: url(https://cdn.v2ex.com/gravatar/{{.LoggedUser.Avatar}})"></span>
+                    </div>
+                    <div class="col">
+                        <h2 class="page-title">{{.LoggedUser.NickName}}</h2>
+                        <div class="page-subtitle">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <a href="#" class="text-reset">{{.LoggedUser.Email}}</a>
+                                </div>
+                                <div class="col-auto text-success">
+                                    已激活
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto d-none d-md-flex">
+                        <a href="/profile/edit" class="btn btn-primary">
+                            修改信息
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hr"></div>
+
+        </div>
+        {{ template "layouts/privacy" .}}
+    </div>
+</div>
+{{template "footer" .}}

@@ -115,6 +115,18 @@ func GetUserByID(uid uint) *User {
 	return &u
 }
 
+func GetUserByNickName(nickName string) (*User, error) {
+	var u User
+	err := db.Model(&User{}).Where(&User{
+		NickName: nickName,
+	}).First(&u).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
 func isUsernameAllowed(name string) error {
 	name = strings.TrimSpace(strings.ToLower(name))
 	if utf8.RuneCountInString(name) == 0 {

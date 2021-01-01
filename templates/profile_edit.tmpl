@@ -1,0 +1,77 @@
+{{template "header" .}}
+<body class="antialiased">
+<div class="page">
+    {{ template "layouts/bar" .}}
+    <div class="content">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            个人信息
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="avatar avatar-md"
+                              style="background-image: url(https://cdn.v2ex.com/gravatar/{{.LoggedUser.Avatar}})"></span>
+                    </div>
+                    <div class="col">
+                        <h2 class="page-title">{{.LoggedUser.NickName}}</h2>
+                        <div class="page-subtitle">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <a href="#" class="text-reset">{{.LoggedUser.Email}}</a>
+                                </div>
+                                <div class="col-auto text-success">
+                                    已激活
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto d-none d-md-flex">
+                        <a href="/profile/edit" class="btn btn-primary">
+                            修改信息
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hr"></div>
+            {{template "layouts/alert" .}}
+            <div class="row align-items-center">
+                <form action="/profile/edit" method="post">
+                    {{.CSRFTokenHTML}}
+                    <div class="col-lg-4">
+                        <div class="mb-3">
+                            <label class="form-label">昵称</label>
+                            <input type="text" class="form-control" name="nick_name" value="{{.LoggedUser.NickName}}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-control" name="password" placeholder="密码为空则不更新">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">确认密码</label>
+                            <input type="password" class="form-control" name="retype">
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                更新信息
+                            </button>
+                            <a href="/profile" class="btn btn-light">
+                                返回
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        {{ template "layouts/privacy" .}}
+    </div>
+</div>
+{{template "footer" .}}
