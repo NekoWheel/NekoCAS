@@ -18,7 +18,6 @@ import (
 type User struct {
 	gorm.Model
 
-	Name     string
 	NickName string
 	Email    string
 	Password string
@@ -46,13 +45,13 @@ func GetUserSalt() string {
 
 // CreateUser 新建一个新的用户
 func CreateUser(u *User) error {
-	if err := isUsernameAllowed(u.Name); err != nil {
+	if err := isUsernameAllowed(u.NickName); err != nil {
 		return err
 	}
 
-	isExist := IsUserExist(u.Name)
+	isExist := IsUserExist(u.NickName)
 	if isExist {
-		return ErrUserAlreadyExist{arg: u.Name}
+		return ErrUserAlreadyExist{arg: u.NickName}
 	}
 
 	u.Email = strings.ToLower(u.Email)
@@ -124,13 +123,13 @@ func isUsernameAllowed(name string) error {
 	return nil
 }
 
-// IsUserExist 检查用户名是否重复
+// IsUserExist 检查用户昵称是否重复
 func IsUserExist(name string) bool {
 	if name == "" {
 		return false
 	}
 	var u User
-	db.Model(&User{}).Where(&User{Name: name}).Find(&u)
+	db.Model(&User{}).Where(&User{NickName: name}).Find(&u)
 	return u.ID != 0
 }
 
@@ -154,7 +153,7 @@ func IsErrUserAlreadyExist(err error) bool {
 }
 
 func (err ErrUserAlreadyExist) Error() string {
-	return fmt.Sprintf("用户名已被使用: %v", err.arg)
+	return fmt.Sprintf("用户昵称已被使用: %v", err.arg)
 }
 
 type ErrEmailAlreadyUsed struct {

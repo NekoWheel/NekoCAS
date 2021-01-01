@@ -1,37 +1,46 @@
 {{template "header" .}}
-<div class="uk-position-center">
-    <div class="uk-card uk-card-default uk-card-body uk-width-large uk-card-small">
-        <div class="uk-card-header uk-text-center">
-            <div class="uk-grid-small uk-flex-middle" uk-grid>
-                <div class="uk-width-expand">
-                    <h3 class="uk-card-title uk-margin-remove-bottom">Neko 账号登录</h3>
-                    <p class="uk-text-meta uk-margin-remove-top">
-                        一个账号畅享 NekoWheel 所有服务
-                    </p>
+<body class="antialiased border-top-wide border-primary d-flex flex-column">
+<div class="flex-fill d-flex flex-column justify-content-center py-4">
+    <div class="container-tight py-6">
+        <div class="text-center mb-4">
+            <a href="."><img src="/static/NekoWheel.png" height="75" alt="NekoWheel"></a>
+        </div>
+        <form class="card card-md" method="post" autocomplete="off">
+            {{.CSRFTokenHTML}}
+            <div class="card-body">
+                <h2 class="card-title text-center">Neko 账号登录</h2>
+                <p class="text-center text-muted">一个账号畅享 NekoWheel 所有服务</p>
+
+                {{template "layouts/alert" .}}
+
+                <div class="mb-3">
+                    <label class="form-label">电子邮箱</label>
+                    <input type="email" name="mail" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">
+                        密码
+                        <span class="form-label-description">
+                  <a href="/forgotPassword">忘记密码？</a>
+                </span>
+                    </label>
+                    <div class="input-group input-group-flat">
+                        <input type="password" name="password" class="form-control" autocomplete="off">
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input"/>
+                        <span class="form-check-label">记住登录</span>
+                    </label>
+                </div>
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary w-100">登录</button>
                 </div>
             </div>
-        </div>
-        <div class="uk-card-body">
-            {{template "layouts/alert" . }}
-
-            <form class="uk-form-stacked" method="post">
-                {{.CSRFTokenHTML}}
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">电子邮箱</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="mail" type="text">
-                    </div>
-                </div>
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">密码</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="password" type="password">
-                    </div>
-                </div>
-                <div class="uk-margin uk-text-center">
-                    <button type="submit" class="uk-button uk-button-primary">登录</button>
-                </div>
-            </form>
+        </form>
+        <div class="text-center text-muted mt-3">
+            没有账号? <a href="/register" tabindex="-1">注册一个</a>
         </div>
     </div>
 </div>

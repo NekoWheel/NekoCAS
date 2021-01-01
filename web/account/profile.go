@@ -10,7 +10,7 @@ import (
 
 func ProfileViewHandler(c *context.Context) {
 	fmt.Println(c.Flash.Get("Tab"))
-	c.Success("profile")
+	c.Success("dashboard")
 }
 
 func ProfileActionHandler(c *context.Context, f form.UpdateProfile) {
@@ -18,7 +18,7 @@ func ProfileActionHandler(c *context.Context, f form.UpdateProfile) {
 
 	// 表单报错
 	if c.HasError() {
-		c.Success("profile")
+		c.Success("dashboard")
 		return
 	}
 

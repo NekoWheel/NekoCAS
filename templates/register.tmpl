@@ -1,55 +1,50 @@
 {{template "header" .}}
-<div class="uk-position-center">
-    <div class="uk-card uk-card-default uk-card-body uk-width-large uk-card-small">
-        <div class="uk-card-header uk-text-center">
-            <div class="uk-grid-small uk-flex-middle" uk-grid>
-                <div class="uk-width-expand">
-                    <h3 class="uk-card-title uk-margin-remove-bottom">注册你的 Neko 账号</h3>
-                    <p class="uk-text-meta uk-margin-remove-top">
-                        一个账号畅享 NekoWheel 所有服务
-                    </p>
+<body class="antialiased border-top-wide border-primary d-flex flex-column">
+<div class="flex-fill d-flex flex-column justify-content-center py-4">
+    <div class="container-tight py-6">
+        <div class="text-center mb-4">
+            <a href="/"><img src="/static/NekoWheel.png" height="75" alt="NekoWheel"></a>
+        </div>
+        <form class="card card-md" method="post">
+            {{.CSRFTokenHTML}}
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">注册你的 Neko 账号</h2>
+
+                {{template "layouts/alert" .}}
+
+                <div class="mb-3">
+                    <label class="form-label">昵称</label>
+                    <input type="text" name="nick_name" class="form-control" value="{{.nickName}}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">电子邮箱</label>
+                    <input type="email" name="mail" class="form-control" value="{{.mail}}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">密码</label>
+                    <div class="input-group input-group-flat">
+                        <input type="password" name="password" class="form-control" autocomplete="off">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">重复密码</label>
+                    <div class="input-group input-group-flat">
+                        <input type="password" name="retype" class="form-control" autocomplete="off">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input"/>
+                        <span class="form-check-label">我同意 <a href="/privacy" tabindex="-1">NekoWheel 隐私政策</a></span>
+                    </label>
+                </div>
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary w-100">注册</button>
                 </div>
             </div>
-        </div>
-        <div class="uk-card-body">
-            {{template "layouts/alert" . }}
-
-            <form class="uk-form-stacked" method="post">
-                {{.CSRFTokenHTML}}
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">电子邮箱</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="mail" type="text" value="{{.mail}}">
-                    </div>
-                </div>
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">用户名</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="name" type="text" value="{{.name}}">
-                    </div>
-                </div>
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">昵称</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="nick_name" type="text" value="{{.nickName}}">
-                    </div>
-                </div>
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">密码</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="password" type="password">
-                    </div>
-                </div>
-                <div class="uk-margin">
-                    <label class="uk-form-label" for="form-stacked-text">重复密码</label>
-                    <div class="uk-form-controls">
-                        <input class="uk-input" name="retype" type="password">
-                    </div>
-                </div>
-                <div class="uk-margin uk-text-center">
-                    <button type="submit" class="uk-button uk-button-primary">注册</button>
-                </div>
-            </form>
+        </form>
+        <div class="text-center text-muted mt-3">
+            已有账号？ <a href="/login" tabindex="-1">现在登录</a>
         </div>
     </div>
 </div>

@@ -48,7 +48,6 @@ func LoginActionHandler(c *context.Context, f form.Login) {
 
 	c.User = u
 	_ = c.Session.Set("uid", u.ID)
-	_ = c.Session.Set("uname", u.Name)
 
 	// 携带 Ticket 跳转到对应服务
 	if c.Service.ID != 0 {

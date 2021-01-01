@@ -38,9 +38,8 @@ type CASPgtIou struct {
 }
 
 type CASAttributes struct {
-	XMLName  xml.Name `xml:"cas:attributes"`
-	NickName string
-	Email    string
+	XMLName xml.Name `xml:"cas:attributes"`
+	Email   string
 }
 
 type CASProxySuccess struct {
@@ -65,10 +64,9 @@ func newCASResponse() CASServiceResponse {
 func NewCASSuccessResponse(u *db.User) []byte {
 	s := newCASResponse()
 	s.Success = &CASAuthenticationSuccess{
-		User: CASUser{User: u.Name},
+		User: CASUser{User: u.NickName},
 		Attributes: CASAttributes{
-			NickName: u.NickName,
-			Email:    u.Email,
+			Email: u.Email,
 		},
 	}
 	x, _ := xml.Marshal(s)

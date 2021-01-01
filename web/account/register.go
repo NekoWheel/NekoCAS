@@ -23,7 +23,6 @@ func RegisterActionHandler(c *context.Context, f form.Register) {
 	}
 
 	u := &db.User{
-		Name:     f.Name,
 		NickName: f.NickName,
 		Email:    f.Mail,
 		Password: f.Password,
@@ -37,7 +36,7 @@ func RegisterActionHandler(c *context.Context, f form.Register) {
 		}
 		return
 	}
-	log.Trace("Account created: %s", u.Name)
+	log.Trace("Account created: %s", u.Email)
 
 	c.Flash.Success("注册成功！")
 	c.Redirect("/login")

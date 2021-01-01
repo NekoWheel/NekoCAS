@@ -11,7 +11,7 @@ func ValidateHandler(c *context.Context) {
 	ticket := c.Query("ticket")
 	user, ok := db.ValidateServiceTicket(c.Service, ticket)
 	if ok {
-		c.PlainText(200, []byte(fmt.Sprintf("yes\n%s\n", user.Name)))
+		c.PlainText(200, []byte(fmt.Sprintf("yes\n%s\n", user.NickName)))
 	}
 	c.PlainText(200, []byte("no\n"))
 }

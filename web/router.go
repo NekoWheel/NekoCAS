@@ -45,7 +45,7 @@ func Run() {
 		// 登录后访问
 		r.Group("", func() {
 			r.Combo("/").Get(account.ProfileViewHandler).Post(bindIgnErr(form.UpdateProfile{}), account.ProfileActionHandler)
-			r.Get("/logout", account.LogoutHandler)
+			r.Post("/logout", account.LogoutHandler)
 		}, reqSignIn)
 
 		// CAS 协议实现
