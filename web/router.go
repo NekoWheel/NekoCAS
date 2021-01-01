@@ -1,6 +1,8 @@
 package web
 
 import (
+	"net/http"
+
 	"github.com/NekoWheel/NekoCAS/conf"
 	v1 "github.com/NekoWheel/NekoCAS/spec/v1"
 	v2 "github.com/NekoWheel/NekoCAS/spec/v2"
@@ -63,5 +65,11 @@ func Run() {
 
 		context.Contexter(),
 	)
+
+	r.NotFound(func(c *macaron.Context) {
+		c.Data["Title"] = "页面不存在"
+		c.HTML(http.StatusNotFound, "404")
+	})
+
 	r.Run("0.0.0.0", conf.Get().Port)
 }
