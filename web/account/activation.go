@@ -29,7 +29,7 @@ func ActivationActionHandler(c *context.Context, cache cache.Cache) {
 			c.RenderWithErr("服务内部错误，发送邮件失败！", "activate", nil)
 			return
 		}
-		_ = cache.Put(key, true, 120)
+		_ = cache.Put(key, 1, 120)
 	} else {
 		c.Flash.Error("邮件发送过于频繁，请等待 2 分钟后再尝试。")
 	}

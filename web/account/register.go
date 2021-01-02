@@ -5,6 +5,8 @@ import (
 	"github.com/NekoWheel/NekoCAS/mail"
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
+	"github.com/go-macaron/cache"
+	"github.com/unknwon/com"
 	log "unknwon.dev/clog/v2"
 )
 
@@ -12,7 +14,7 @@ func RegisterViewHandler(c *context.Context) {
 	c.Success("register")
 }
 
-func RegisterActionHandler(c *context.Context, f form.Register) {
+func RegisterActionHandler(c *context.Context, f form.Register, cache cache.Cache) {
 	if c.HasError() {
 		c.Success("register")
 		return
@@ -41,6 +43,8 @@ func RegisterActionHandler(c *context.Context, f form.Register) {
 
 	// 发送账号激活邮件
 	code := u.GetActivationCode()
+	key := "Activate_Mail_" + com.ToStr(c.User.ID)
+	_ = cache.Put(key, 1, 120)
 	go mail.SendActivationMail(u.Email, code)
 
 	c.Flash.Success("注册成功！")

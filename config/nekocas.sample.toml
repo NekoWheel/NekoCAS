@@ -2,7 +2,6 @@
 name = "NekoCAS"
 port = 8000
 icp = ""
-salt = ""
 security_key = ""
 csrf_key = ""
 

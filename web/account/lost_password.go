@@ -32,7 +32,7 @@ func LostPasswordActionHandler(c *context.Context, f form.LostPassword, cache ca
 			c.RenderWithErr("服务内部错误，发送邮件失败！", "lost_password", nil)
 			return
 		}
-		_ = cache.Put(key, true, 120)
+		_ = cache.Put(key, 1, 120)
 	} else {
 		c.Flash.Error("邮件发送过于频繁，请等待 2 分钟后再尝试。")
 	}
@@ -86,7 +86,7 @@ func ResetPasswordActionHandler(c *context.Context, f form.ResetPassword) {
 		c.Redirect(c.Req.URL.String())
 		return
 	}
-	
+
 	user.Password = f.Password
 	err := db.UpdateUserProfile(user)
 	if err != nil {

@@ -45,7 +45,7 @@ func render(tpl string, data map[string]interface{}) (string, error) {
 func SendActivationMail(to, code string) error {
 	data := map[string]interface{}{
 		"Email": to,
-		"Link":  conf.Get().Site.BaseURL + "/activate_code/?code=" + code,
+		"Link":  conf.Get().Site.BaseURL + "/activate_code?code=" + code,
 	}
 	body, err := render("activate", data)
 	if err != nil {
@@ -58,7 +58,7 @@ func SendActivationMail(to, code string) error {
 func SendLostPasswordMail(to, code string) error {
 	data := map[string]interface{}{
 		"Email": to,
-		"Link":  conf.Get().Site.BaseURL + "/reset_password/?code=" + code,
+		"Link":  conf.Get().Site.BaseURL + "/reset_password?code=" + code,
 	}
 	body, err := render("reset_password", data)
 	if err != nil {
