@@ -22,7 +22,7 @@ func ActivationViewHandler(c *context.Context, cache cache.Cache) {
 
 func ActivationActionHandler(c *context.Context, cache cache.Cache) {
 	key := "Activate_Mail_" + com.ToStr(c.User.ID)
-	if cache.Get(key) == nil {
+	if !cache.IsExist(key) {
 		code := c.User.GetActivationCode()
 		err := mail.SendActivationMail(c.User.Email, code)
 		if err != nil {

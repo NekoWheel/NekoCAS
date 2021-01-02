@@ -55,6 +55,19 @@ func SendActivationMail(to, code string) error {
 	return send(to, "激活您的 Neko 账号", body)
 }
 
+func SendLostPasswordMail(to, code string) error {
+	data := map[string]interface{}{
+		"Email": to,
+		"Link":  conf.Get().Site.BaseURL + "/reset_password/?code=" + code,
+	}
+	body, err := render("reset_password", data)
+	if err != nil {
+		return err
+	}
+
+	return send(to, "您正在找回您的 Neko 账号密码", body)
+}
+
 func send(to, title, content string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", conf.Get().Mail.Account)

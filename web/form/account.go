@@ -34,3 +34,20 @@ type UpdateProfile struct {
 func (f *UpdateProfile) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f)
 }
+
+type LostPassword struct {
+	Email string `binding:"Required;Email;MaxSize(254)" locale:"电子邮箱"`
+}
+
+func (f *LostPassword) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f)
+}
+
+type ResetPassword struct {
+	Password string `binding:"Required;MaxSize(255)" locale:"密码"`
+	Retype   string
+}
+
+func (f *ResetPassword) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f)
+}

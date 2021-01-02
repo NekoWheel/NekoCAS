@@ -40,6 +40,8 @@ func Run() {
 				Get(account.RegisterViewHandler).
 				Post(bindIgnErr(form.Register{}), account.RegisterActionHandler)
 			r.Any("/activate_code", account.VerifyUserActiveCodeHandler)
+			r.Combo("/lost_password").Get(account.LostPasswordHandler).Post(bindIgnErr(form.LostPassword{}), account.LostPasswordActionHandler)
+			r.Combo("/reset_password").Get(account.ResetPasswordHandler).Post(bindIgnErr(form.ResetPassword{}), account.ResetPasswordActionHandler)
 		}, reqSignOut)
 
 		// 无论是否已经登录都可以访问
