@@ -3,6 +3,7 @@ package db
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"unicode/utf8"
@@ -10,6 +11,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/helper"
 	"github.com/pkg/errors"
 	"github.com/thanhpk/randstr"
+	"github.com/unknwon/com"
 	"golang.org/x/crypto/pbkdf2"
 	"gorm.io/gorm"
 )
@@ -23,6 +25,10 @@ type User struct {
 	Password string
 	Salt     string
 	Avatar   string
+
+	// Permission
+	IsActive bool
+	IsAdmin  bool
 }
 
 // EncodePassword 密码加盐处理
@@ -36,6 +42,37 @@ func (u *User) ValidatePassword(password string) bool {
 	newUser := &User{Password: password, Salt: u.Salt}
 	newUser.EncodePassword()
 	return subtle.ConstantTimeCompare([]byte(u.Password), []byte(newUser.Password)) == 1
+}
+
+// GetActivationCode 返回用户账号激活码，有效期两小时。
+func (u *User) GetActivationCode() string {
+	code := helper.CreateTimeLimitCode(com.ToStr(u.ID)+u.Email+u.NickName+u.Password+u.Salt, 120, nil)
+
+	// 添加编码后的邮箱信息，用于验证时反查用户信息
+	code += hex.EncodeToString([]byte(u.Email))
+	return code
+}
+
+// VerifyUserActiveCode 检查用户输入的账号激活码是否有效。
+func VerifyUserActiveCode(code string) *User {
+	if len(code) <= helper.TIME_LIMIT_CODE_LENGTH {
+		return nil
+	}
+
+	hexStr := code[helper.TIME_LIMIT_CODE_LENGTH:]
+	if b, err := hex.DecodeString(hexStr); err == nil {
+		if user := GetUserByEmail(string(b)); user == nil {
+			return nil
+		} else {
+			prefix := code[:helper.TIME_LIMIT_CODE_LENGTH]
+			data := com.ToStr(user.ID) + string(b) + user.NickName + user.Password + user.Salt
+
+			if helper.VerifyTimeLimitCode(data, 120, prefix) {
+				return user
+			}
+		}
+	}
+	return nil
 }
 
 // GetUserSalt 返回用户随机的盐
@@ -99,6 +136,7 @@ func UpdateUserProfile(u *User) error {
 	}).Updates(&User{
 		NickName: u.NickName,
 		Password: u.Password,
+		IsActive: u.IsActive,
 	}).Error
 }
 
@@ -108,6 +146,17 @@ func GetUserByID(uid uint) *User {
 		Model: gorm.Model{
 			ID: uid,
 		},
+	}).Find(&u)
+	if u.ID == 0 {
+		return nil
+	}
+	return &u
+}
+
+func GetUserByEmail(email string) *User {
+	var u User
+	db.Model(&User{}).Where(&User{
+		Email: email,
 	}).Find(&u)
 	if u.ID == 0 {
 		return nil

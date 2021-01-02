@@ -1,6 +1,9 @@
+[site]
+name = "NekoCAS"
 port = 8000
 icp = ""
-session_key = ""
+salt = ""
+security_key = ""
 csrf_key = ""
 
 [mysql]
@@ -12,3 +15,9 @@ name = ""
 [redis]
 addr = "127.0.0.1:6379"
 password = ""
+
+[mail]
+account = ""
+password = ""
+smtp = ""
+port = 465

@@ -11,6 +11,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/web/form"
 	"github.com/NekoWheel/NekoCAS/web/middleware"
 	"github.com/go-macaron/binding"
+	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	"gopkg.in/macaron.v1"
@@ -28,6 +29,7 @@ func Run() {
 		IndentJSON: macaron.Env != macaron.PROD,
 	}
 	r.Use(macaron.Renderer(renderOpt))
+	r.Use(cache.Cacher())
 
 	bindIgnErr := binding.BindIgnErr
 
@@ -37,6 +39,7 @@ func Run() {
 			r.Combo("/register").
 				Get(account.RegisterViewHandler).
 				Post(bindIgnErr(form.Register{}), account.RegisterActionHandler)
+			r.Any("/activate_code", account.VerifyUserActiveCodeHandler)
 		}, reqSignOut)
 
 		// 无论是否已经登录都可以访问
@@ -50,6 +53,7 @@ func Run() {
 			r.Combo("/profile").Get(account.ProfileViewHandler)
 			r.Combo("/profile/edit").Get(account.ProfileEditViewHandler).Post(bindIgnErr(form.UpdateProfile{}), account.ProfileEditActionHandler)
 			r.Post("/logout", account.LogoutHandler)
+			r.Combo("/activate").Get(account.ActivationViewHandler).Post(account.ActivationActionHandler)
 		}, reqSignIn)
 
 		// CAS 协议实现
@@ -61,7 +65,7 @@ func Run() {
 		}),
 
 		csrf.Csrfer(csrf.Options{
-			Secret: conf.Get().CSRFKey,
+			Secret: conf.Get().Site.CSRFKey,
 			Header: "X-CSRF-Token",
 		}),
 
@@ -73,5 +77,5 @@ func Run() {
 		c.HTML(http.StatusNotFound, "404")
 	})
 
-	r.Run("0.0.0.0", conf.Get().Port)
+	r.Run("0.0.0.0", conf.Get().Site.Port)
 }

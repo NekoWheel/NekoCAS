@@ -6,6 +6,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/db"
 	"github.com/NekoWheel/NekoCAS/web/form"
 	"github.com/NekoWheel/NekoCAS/web/template"
+	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	"gopkg.in/macaron.v1"
@@ -15,6 +16,7 @@ import (
 // Context 请求上下文
 type Context struct {
 	*macaron.Context
+	Cache   cache.Cache
 	csrf    csrf.CSRF
 	Flash   *session.Flash
 	Session session.Store
@@ -59,9 +61,10 @@ func (c *Context) HasError() bool {
 
 // Contexter initializes a classic context for a request.
 func Contexter() macaron.Handler {
-	return func(ctx *macaron.Context, sess session.Store, f *session.Flash, x csrf.CSRF) {
+	return func(ctx *macaron.Context, sess session.Store, f *session.Flash, x csrf.CSRF, cache cache.Cache) {
 		c := &Context{
 			Context: ctx,
+			Cache:   cache,
 			csrf:    x,
 			Flash:   f,
 			Session: sess,
@@ -73,6 +76,21 @@ func Contexter() macaron.Handler {
 		if c.User != nil {
 			c.IsLogged = true
 			c.Data["LoggedUser"] = c.User
+
+			// 检查用户账号是否已激活
+			if !c.User.IsActive &&
+				ctx.Req.URL.Path != "/activate" &&
+				ctx.Req.URL.Path != "/activate_code" &&
+				ctx.Req.URL.Path != "/logout" { // 允许未激活用户登出
+				c.Redirect("/activate")
+				return
+			}
+			// 账号已激活
+			if c.User.IsActive {
+				if ctx.Req.URL.Path == "/activate" || ctx.Req.URL.Path == "/activate_code" {
+					c.Redirect("/")
+				}
+			}
 		}
 
 		// 后台菜单

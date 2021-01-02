@@ -7,8 +7,14 @@ import (
 )
 
 type config struct {
-	Port    int    `toml:"port"`
-	CSRFKey string `toml:"csrf_key"`
+	Site struct {
+		Name        string `toml:"name"`
+		BaseURL     string `toml:"base_url"`
+		Port        int    `toml:"port"`
+		ICP         string `toml:"icp"`
+		SecurityKey string `toml:"security_key"`
+		CSRFKey     string `toml:"csrf_key"`
+	} `toml:"site"`
 
 	MySQL struct {
 		User     string `toml:"user"`
@@ -21,6 +27,13 @@ type config struct {
 		Addr     string `toml:"addr"`
 		Password string `toml:"password"`
 	} `toml:"redis"`
+
+	Mail struct {
+		Account  string `toml:"account"`
+		Password string `toml:"password"`
+		SMTP     string `toml:"smtp"`
+		Port     int    `toml:"port"`
+	} `toml:"mail"`
 }
 
 var conf *config

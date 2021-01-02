@@ -2,6 +2,7 @@ package account
 
 import (
 	"github.com/NekoWheel/NekoCAS/db"
+	"github.com/NekoWheel/NekoCAS/mail"
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
 	log "unknwon.dev/clog/v2"
@@ -37,6 +38,10 @@ func RegisterActionHandler(c *context.Context, f form.Register) {
 		return
 	}
 	log.Trace("Account created: %s", u.Email)
+
+	// 发送账号激活邮件
+	code := u.GetActivationCode()
+	go mail.SendActivationMail(u.Email, code)
 
 	c.Flash.Success("注册成功！")
 	c.Redirect("/login")
