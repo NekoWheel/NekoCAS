@@ -10,6 +10,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
 	"github.com/NekoWheel/NekoCAS/web/middleware"
+	"github.com/NekoWheel/NekoCAS/web/template"
 	"github.com/go-macaron/binding"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
@@ -24,10 +25,7 @@ func Run() {
 	reqSignIn := context.Toggle(&context.ToggleOptions{SignInRequired: true})
 	reqSignOut := context.Toggle(&context.ToggleOptions{SignOutRequired: true})
 
-	renderOpt := macaron.RenderOptions{
-		Directory:  "templates",
-		IndentJSON: macaron.Env != macaron.PROD,
-	}
+	renderOpt := template.RenderOptions()
 	r.Use(macaron.Renderer(renderOpt))
 	r.Use(cache.Cacher())
 

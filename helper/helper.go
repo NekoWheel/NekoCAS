@@ -75,3 +75,21 @@ func VerifyTimeLimitCode(data string, minutes int, code string) bool {
 
 	return false
 }
+
+// Substr 根据给定的开始位置和长度裁剪字符串。
+func Substr(s string, start, length int) string {
+	bt := []rune(s)
+	if start < 0 {
+		start = 0
+	}
+	if start > len(bt) {
+		start = start % len(bt)
+	}
+	var end int
+	if (start + length) > (len(bt) - 1) {
+		end = len(bt)
+	} else {
+		end = start + length
+	}
+	return string(bt[start:end])
+}

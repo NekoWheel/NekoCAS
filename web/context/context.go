@@ -3,7 +3,9 @@ package context
 import (
 	"net/http"
 
+	"github.com/NekoWheel/NekoCAS/conf"
 	"github.com/NekoWheel/NekoCAS/db"
+	"github.com/NekoWheel/NekoCAS/helper"
 	"github.com/NekoWheel/NekoCAS/web/form"
 	"github.com/NekoWheel/NekoCAS/web/template"
 	"github.com/go-macaron/cache"
@@ -96,6 +98,9 @@ func Contexter() macaron.Handler {
 		// 后台菜单
 		c.Data["Tab"] = c.Flash.Get("Tab")
 
+		c.Data["SiteName"] = conf.Get().Site.Name
+		c.Data["CommitSha"] = helper.Substr(conf.COMMIT_SHA, 0, 8)
+		c.Data["CommitLink"] = "https://github.com/NekoWheel/NekoCAS/commit/" + conf.COMMIT_SHA
 		c.Data["CSRFToken"] = x.GetToken()
 		c.Data["CSRFTokenHTML"] = template.Safe(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
 		log.Trace("Session ID: %s", sess.ID())

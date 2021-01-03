@@ -24,7 +24,7 @@ jobs:
           go mod tidy
       - name: Build
         run: |
-          CGO_ENABLED=0 go build -v -ldflags "-w -s -extldflags '-static' -X 'github.com/NekoWheel/NekoCAS.COMMITSHA=$GITHUB_SHA'" -o NekoCAS .
+          CGO_ENABLED=0 go build -v -ldflags "-w -s -extldflags '-static' -X 'github.com/NekoWheel/NekoCAS/conf.COMMIT_SHA=$GITHUB_SHA'" -o NekoCAS .
           pwd
       - name: Archive production artifacts
         uses: actions/upload-artifact@v1

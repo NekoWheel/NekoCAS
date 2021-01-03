@@ -13,7 +13,7 @@ func init() {
 func main() {
 	db.ConnDB()
 	db.ConnRedis()
-	
+
 	web.Run()
 	log.Stop()
 }

@@ -6,6 +6,8 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+var COMMIT_SHA = "debug"
+
 type config struct {
 	Site struct {
 		Name        string `toml:"name"`
