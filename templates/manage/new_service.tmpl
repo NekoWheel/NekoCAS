@@ -1,0 +1,46 @@
+{{template "header" .}}
+<body class="antialiased">
+<div class="page">
+    {{ template "layouts/bar" .}}
+    <div class="content">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            添加新服务
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <form class="card card-md" method="post">
+                    {{.CSRFTokenHTML}}
+                    <div class="card-body">
+                        {{template "layouts/alert" .}}
+
+                        <div class="mb-3">
+                            <label class="form-label">服务名</label>
+                            <input type="text" name="name" class="form-control" value="{{.name}}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">服务 Logo 链接</label>
+                            <input type="text" name="avatar" class="form-control" value="{{.avatar}}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">白名单域名</label>
+                            <div class="input-group input-group-flat">
+                                <input type="text" name="domain" class="form-control" value="{{.domain}}">
+                            </div>
+                        </div>
+                        <div class="form-footer">
+                            <button type="submit" class="btn btn-primary w-100">添加</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{ template "layouts/privacy" .}}
+</div>
+{{template "footer" .}}

@@ -1,0 +1,31 @@
+{{template "header" .}}
+<body class="antialiased">
+<div class="page">
+    {{ template "layouts/bar" .}}
+    <div class="content">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            确认删除服务
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <form class="card card-md" method="post">
+                    {{.CSRFTokenHTML}}
+                    <div class="card-body">
+                        <span>您确认删除服务 <b>{{.Service.Name}} - {{.Service.Domain}}</b> 吗？</span>
+                        <div class="form-footer">
+                            <button type="submit" class="btn btn-danger w-100">是的，我确认删除</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{ template "layouts/privacy" .}}
+</div>
+{{template "footer" .}}
