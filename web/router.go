@@ -39,7 +39,6 @@ func Run() {
 			r.Combo("/register").
 				Get(account.RegisterViewHandler).
 				Post(bindIgnErr(form.Register{}), account.RegisterActionHandler)
-			r.Any("/activate_code", account.VerifyUserActiveCodeHandler)
 			r.Combo("/lost_password").Get(account.LostPasswordHandler).Post(bindIgnErr(form.LostPassword{}), account.LostPasswordActionHandler)
 			r.Combo("/reset_password").Get(account.ResetPasswordHandler).Post(bindIgnErr(form.ResetPassword{}), account.ResetPasswordActionHandler)
 		}, reqSignOut)
@@ -48,6 +47,7 @@ func Run() {
 		r.Combo("/login", middleware.ServicePreCheck).
 			Get(account.LoginViewHandler).
 			Post(bindIgnErr(form.Login{}), account.LoginActionHandler)
+		r.Any("/activate_code", account.VerifyUserActiveCodeHandler)
 
 		// 登录后访问
 		r.Group("", func() {
