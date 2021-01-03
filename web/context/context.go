@@ -78,6 +78,7 @@ func Contexter() macaron.Handler {
 		if c.User != nil {
 			c.IsLogged = true
 			c.Data["LoggedUser"] = c.User
+			c.Data["IsAdmin"] = c.User.IsAdmin
 
 			// 检查用户账号是否已激活
 			if !c.User.IsActive &&

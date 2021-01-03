@@ -1,0 +1,117 @@
+{{template "header" .}}
+<body class="antialiased">
+<div class="page">
+    {{ template "layouts/bar" .}}
+    <div class="content">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            用户管理
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                        <tr>
+                            <th>昵称 / 电子邮箱</th>
+                            <th>激活状态</th>
+                            <th>角色</th>
+                            <th class="w-1">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range .Users }}
+                        <tr>
+                            <td>
+                                <div class="d-flex py-1 align-items-center">
+                                    <span class="avatar me-2"
+                                          style="background-image: url(https://cdn.v2ex.com/gravatar/{{.Avatar}})"></span>
+                                    <div class="flex-fill">
+                                        <div class="font-weight-medium">{{.NickName}}</div>
+                                        <div class="text-muted">{{.Email}}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ if .IsActive }}
+                                <span class="badge bg-green-lt">已激活</span>
+                                {{ else }}
+                                <span class="badge bg-yellow-lt">未激活</span>
+                                {{ end }}
+                            </td>
+                            <td class="text-muted">
+                                {{ if .IsAdmin }}
+                                <span class="badge bg-orange-lt">管理员</span>
+                                {{ else }}
+                                <span class="badge bg-blue-lt">用户</span>
+                                {{ end }}
+                            </td>
+                            <td>
+                                <div class="btn-list flex-nowrap">
+                                    <a href="#" class="btn btn-white">
+                                        编辑
+                                    </a>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport"
+                                                data-bs-toggle="dropdown">
+                                            更多
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="#">
+                                                封禁
+                                            </a>
+                                            <a class="dropdown-item" href="#">
+                                                设为管理员
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">第 <span>{{.From}}</span> - <span>{{.To}}</span>
+                        个 |
+                        总共
+                        <span>{{.Total}}</span>
+                        个</p>
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item {{if lt .PreviousPage 1}} disabled {{end}}">
+                            <a class="page-link" href="?p={{.PreviousPage}}" tabindex="-1" aria-disabled="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <polyline points="15 6 9 12 15 18"></polyline>
+                                </svg>
+                                上一页
+                            </a>
+                        </li>
+                        <li class="page-item {{if gt .NextPage .LastPage}} disabled {{end}}">
+                            <a class="page-link" href="?p={{.NextPage}}">
+                                下一页
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <polyline points="9 6 15 12 9 18"></polyline>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {{ template "layouts/privacy" .}}
+    </div>
+</div>
+{{template "footer" .}}

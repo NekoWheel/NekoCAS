@@ -176,6 +176,37 @@ func GetUserByNickName(nickName string) (*User, error) {
 	return &u, nil
 }
 
+// GetUsers 批量获取用户
+// options[0] offset
+// options[1] limit
+func GetUsers(options ...int) []*User {
+	var users []*User
+
+	if len(options) == 0 {
+		db.Model(&User{}).Find(&users)
+	} else {
+		offset := 0
+		if len(options) > 1 && options[0] > 0 {
+			offset = options[0]
+		}
+
+		limit := 0
+		if len(options) == 2 && options[1] > 0 {
+			limit = options[1]
+		}
+		db.Model(&User{}).Offset(offset).Limit(limit).Find(&users)
+	}
+
+	return users
+}
+
+// CountUsers 返回用户的总数
+func CountUsers() int64 {
+	var count int64
+	db.Model(&User{}).Count(&count)
+	return count
+}
+
 func isUsernameAllowed(name string) error {
 	name = strings.TrimSpace(strings.ToLower(name))
 	if utf8.RuneCountInString(name) == 0 {

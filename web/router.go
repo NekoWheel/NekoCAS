@@ -9,6 +9,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/web/account"
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
+	"github.com/NekoWheel/NekoCAS/web/manager"
 	"github.com/NekoWheel/NekoCAS/web/middleware"
 	"github.com/NekoWheel/NekoCAS/web/template"
 	"github.com/go-macaron/binding"
@@ -24,6 +25,7 @@ func Run() {
 	// 登录登出状态
 	reqSignIn := context.Toggle(&context.ToggleOptions{SignInRequired: true})
 	reqSignOut := context.Toggle(&context.ToggleOptions{SignOutRequired: true})
+	reqManager := context.Toggle(&context.ToggleOptions{SignInRequired: true, AdminRequired: true})
 
 	renderOpt := template.RenderOptions()
 	r.Use(macaron.Renderer(renderOpt))
@@ -55,6 +57,11 @@ func Run() {
 			r.Post("/logout", account.LogoutHandler)
 			r.Combo("/activate").Get(account.ActivationViewHandler).Post(account.ActivationActionHandler)
 		}, reqSignIn)
+
+		// 管理页面
+		r.Group("/manage", func() {
+			r.Get("/users", manager.UsersViewHandler)
+		}, reqManager)
 
 		// CAS 协议实现
 		r.Get("/validate", middleware.ServicePreCheck, v1.ValidateHandler)        // v1

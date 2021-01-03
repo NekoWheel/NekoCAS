@@ -40,6 +40,22 @@
                             </span>
                         </a>
                     </li>
+                    {{ if .IsAdmin }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage/users">
+                            <span class="nav-link-title">
+                              用户管理
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage/services">
+                            <span class="nav-link-title">
+                              服务管理
+                            </span>
+                        </a>
+                    </li>
+                    {{ end }}
                 </ul>
             </div>
         </div>
