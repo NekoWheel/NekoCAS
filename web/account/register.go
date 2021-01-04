@@ -6,7 +6,6 @@ import (
 	"github.com/NekoWheel/NekoCAS/web/context"
 	"github.com/NekoWheel/NekoCAS/web/form"
 	"github.com/go-macaron/cache"
-	"github.com/unknwon/com"
 	log "unknwon.dev/clog/v2"
 )
 
@@ -40,11 +39,9 @@ func RegisterActionHandler(c *context.Context, f form.Register, cache cache.Cach
 		return
 	}
 	log.Trace("Account created: %s", u.Email)
-
+	
 	// 发送账号激活邮件
 	code := u.GetActivationCode()
-	key := "Activate_Mail_" + com.ToStr(c.User.ID)
-	_ = cache.Put(key, 1, 120)
 	go mail.SendActivationMail(u.Email, code)
 
 	c.Flash.Success("注册成功！")
