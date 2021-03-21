@@ -3,11 +3,12 @@ package mail
 import (
 	"fmt"
 	"html/template"
-	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/NekoWheel/NekoCAS/internal/conf"
+	"github.com/NekoWheel/NekoCAS/internal/filesystem"
+	"github.com/NekoWheel/NekoCAS/templates"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/macaron.v1"
 )
@@ -20,15 +21,19 @@ var (
 // render 根据给定的信息渲染邮件模板
 func render(tpl string, data map[string]interface{}) (string, error) {
 	tplRenderOnce.Do(func() {
+		var templateFS macaron.TemplateFileSystem
+		if macaron.Env == macaron.PROD {
+			templateFS = filesystem.NewFS(templates.FS)
+		}
+
 		opt := &macaron.RenderOptions{
-			Directory:         filepath.Join("templates", "mail"),
-			AppendDirectories: []string{filepath.Join("templates", "mail")},
-			Extensions:        []string{".tmpl", ".html"},
+			Extensions: []string{".tmpl", ".html"},
 			Funcs: []template.FuncMap{map[string]interface{}{
 				"Year": func() int {
 					return time.Now().Year()
 				},
 			}},
+			TemplateFileSystem: templateFS,
 		}
 
 		ts := macaron.NewTemplateSet()
