@@ -1,6 +1,8 @@
 package account
 
 import (
+	"strings"
+
 	"github.com/NekoWheel/NekoCAS/internal/db"
 	"github.com/NekoWheel/NekoCAS/internal/mail"
 	"github.com/NekoWheel/NekoCAS/internal/web/context"
@@ -18,7 +20,29 @@ func RegisterActionHandler(c *context.Context, f form.Register, cache cache.Cach
 		c.RenderWithErr("当前未开放注册", "register", &f)
 		return
 	}
-	
+
+	// 检查域名白名单
+	c.Setting.MailWhitelist = strings.TrimSpace(c.Setting.MailWhitelist)
+	if c.Setting.MailWhitelist != "" {
+		mailWhitelist := strings.Split(c.Setting.MailWhitelist, ",")
+		mailPart := strings.Split(f.Mail, "@")
+		if len(mailPart) >= 2 {
+			mailDomain := mailPart[1]
+
+			ok := false
+			for _, domain := range mailWhitelist {
+				if domain == mailDomain {
+					ok = true
+					break
+				}
+			}
+			if !ok {
+				c.RenderWithErr("该邮箱域名不在白名单中", "register", &f)
+				return
+			}
+		}
+	}
+
 	if c.HasError() {
 		c.Success("register")
 		return
