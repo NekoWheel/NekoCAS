@@ -4,6 +4,7 @@ import (
 	"github.com/NekoWheel/NekoCAS/internal/db"
 	"github.com/NekoWheel/NekoCAS/internal/web/context"
 	"github.com/NekoWheel/NekoCAS/internal/web/form"
+	log "unknwon.dev/clog/v2"
 )
 
 func SiteViewHandler(c *context.Context) {
@@ -18,14 +19,20 @@ func SiteActionHandler(c *context.Context, f form.Site) {
 	}
 
 	if f.OpenRegister {
-		db.SetSetting("open_setting", "on")
+		err := db.SetSetting("open_setting", "on")
+		if err != nil {
+			log.Error("Failed to set %q to %q", "open_setting", "on")
+		}
 	} else {
-		db.SetSetting("open_setting", "off")
+		err := db.SetSetting("open_setting", "off")
+		if err != nil {
+			log.Error("Failed to set %q to %q", "open_setting", "off")
+		}
 	}
 
-	db.SetSetting("site_logo", f.SiteLogo)
-	db.SetSetting("mail_whitelist", f.MailWhitelist)
-	db.SetSetting("privacy", f.Privacy)
+	_ = db.SetSetting("site_logo", f.SiteLogo)
+	_ = db.SetSetting("mail_whitelist", f.MailWhitelist)
+	_ = db.SetSetting("privacy", f.Privacy)
 
 	c.Redirect("/manage/site")
 }
