@@ -48,6 +48,9 @@ func Run() {
 			Get(account.LoginViewHandler).
 			Post(bindIgnErr(form.Login{}), account.LoginActionHandler)
 		r.Any("/activate_code", account.VerifyUserActiveCodeHandler)
+		r.Get("/privacy", func(c *context.Context) {
+			c.Success("privacy")
+		})
 
 		// 登录后访问
 		r.Group("", func() {

@@ -15,6 +15,9 @@ func RenderOptions() macaron.RenderOptions {
 			"Year": func() int {
 				return time.Now().Year()
 			},
+			"Safe": func(raw string) template.HTML {
+				return Safe(raw)
+			},
 		}},
 	}
 }

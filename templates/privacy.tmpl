@@ -1,0 +1,31 @@
+{{template "header" .}}
+<body class="antialiased border-top-wide border-primary d-flex flex-column">
+<div class="page-wrapper">
+    <div class="container-xl mt-3">
+        <div class="page-header d-print-none">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="page-title">
+                        {{.SiteName}} 隐私政策
+                    </h2>
+                    <a href="/">回到主页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row row-cards">
+                <div class="card card-lg">
+                    <div class="card-body">
+                        <div class="markdown">
+                            {{.Setting.Privacy | Safe}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ template "layouts/privacy" .}}
+</div>
+{{template "footer" .}}
