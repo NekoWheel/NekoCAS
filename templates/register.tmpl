@@ -3,12 +3,12 @@
 <div class="flex-fill d-flex flex-column justify-content-center py-4">
     <div class="container-tight py-6">
         <div class="text-center mb-4">
-            <a href="/"><img src="/static/NekoWheel.png" height="75" alt="NekoWheel"></a>
+            <a href="/"><img src="/static/NekoWheel.png" height="75" alt="{{.SiteName}}"></a>
         </div>
         <form class="card card-md" method="post">
             {{.CSRFTokenHTML}}
             <div class="card-body">
-                <h2 class="card-title text-center mb-4">注册你的 Neko 账号</h2>
+                <h2 class="card-title text-center mb-4">注册你的 {{.SiteName}} 账号</h2>
 
                 {{template "layouts/alert" .}}
 
@@ -35,7 +35,8 @@
                 <div class="mb-3">
                     <label class="form-check">
                         <input type="checkbox" class="form-check-input"/>
-                        <span class="form-check-label">我同意 <a href="/privacy" tabindex="-1">NekoWheel 隐私政策</a></span>
+                        <span class="form-check-label">我同意 <a href="/privacy"
+                                                              tabindex="-1">{{.SiteName}} 隐私政策</a></span>
                     </label>
                 </div>
                 <div class="form-footer">

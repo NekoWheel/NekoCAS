@@ -4,13 +4,14 @@
 <div class="flex-fill d-flex flex-column justify-content-center py-4">
     <div class="container-tight py-6">
         <div class="text-center mb-4">
-            <a href="/"><img src="/static/NekoWheel.png" height="75" alt="NekoWheel"></a>
+            <a href="/"><img src="/static/NekoWheel.png" height="75" alt="{{.SiteName}}"></a>
         </div>
         <form class="card card-md" action="" method="post">
             <div class="card-body">
                 {{template "layouts/alert" .}}
                 <h2 class="card-title text-center mb-4">已发送激活邮件到您的邮箱</h2>
-                <p class="text-muted mb-4">一封用于激活您的 Neko 账户的邮件已经发送到您的电子邮箱（{{.LoggedUser.Email}}），请查收并根据邮件提示激活您的 Neko
+                <p class="text-muted mb-4">一封用于激活您的 {{.SiteName}} 账户的邮件已经发送到您的电子邮箱（{{.LoggedUser.Email}}），请查收并根据邮件提示激活您的
+                    {{.SiteName}}
                     账号。</p>
                 <div class="form-footer">
                     <form action="/activate" method="post">
