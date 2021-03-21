@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"crypto/tls"
 	"fmt"
 	"sync"
 
@@ -86,5 +87,6 @@ func send(to, title, content string) error {
 		conf.Get().Mail.Account,
 		conf.Get().Mail.Password,
 	)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	return d.DialAndSend(m)
 }
