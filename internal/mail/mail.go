@@ -27,7 +27,8 @@ func render(tpl string, data map[string]interface{}) (string, error) {
 		}
 
 		opt := &macaron.RenderOptions{
-			Extensions: []string{".tmpl", ".html"},
+			Directory:  "templates",
+			IndentJSON: macaron.Env != macaron.PROD,
 			Funcs: []template.FuncMap{map[string]interface{}{
 				"Year": func() int {
 					return time.Now().Year()
