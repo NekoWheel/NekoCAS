@@ -14,6 +14,11 @@ func RegisterViewHandler(c *context.Context) {
 }
 
 func RegisterActionHandler(c *context.Context, f form.Register, cache cache.Cache) {
+	if c.Setting.OpenRegister != "on" {
+		c.RenderWithErr("当前未开放注册", "register", &f)
+		return
+	}
+	
 	if c.HasError() {
 		c.Success("register")
 		return

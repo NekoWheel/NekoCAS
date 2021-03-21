@@ -22,11 +22,19 @@ type Context struct {
 	csrf    csrf.CSRF
 	Flash   *session.Flash
 	Session session.Store
+	Setting *setting
 
 	User       *db.User
 	IsLogged   bool
 	Service    *db.Service
 	ServiceURL string
+}
+
+type setting struct {
+	OpenRegister  string
+	SiteLogo      string
+	MailWhitelist string
+	Privacy       string
 }
 
 // Success 返回模板，状态码 200
@@ -70,6 +78,7 @@ func Contexter() macaron.Handler {
 			csrf:    x,
 			Flash:   f,
 			Session: sess,
+			Setting: &setting{},
 		}
 
 		// 获取登录用户信息
@@ -95,6 +104,15 @@ func Contexter() macaron.Handler {
 				}
 			}
 		}
+
+		// 站点设置
+		c.Setting = &setting{
+			OpenRegister:  db.MustGetSetting("open_setting", "off"),
+			SiteLogo:      db.MustGetSetting("site_logo", "https://cas.n3ko.co/static/NekoWheel.png"),
+			MailWhitelist: db.MustGetSetting("mail_whitelist"),
+			Privacy:       db.MustGetSetting("privacy"),
+		}
+		c.Data["Setting"] = c.Setting
 
 		// 后台菜单
 		c.Data["Tab"] = c.Flash.Get("Tab")

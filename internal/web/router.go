@@ -60,6 +60,7 @@ func Run() {
 
 		// 管理页面
 		r.Group("/manage", func() {
+			// 用户
 			r.Get("/users", manager.UsersViewHandler)
 
 			// 服务
@@ -67,6 +68,9 @@ func Run() {
 			r.Combo("/services/new").Get(manager.NewServiceViewHandler).Post(bindIgnErr(form.NewService{}), manager.NewServiceActionHandler)
 			r.Combo("/services/edit").Get(manager.EditServiceViewHandler).Post(bindIgnErr(form.EditService{}), manager.EditServiceActionHandler)
 			r.Combo("/services/delete").Get(manager.DeleteServiceViewHandler).Post(manager.DeleteServiceActionHandler)
+
+			// 站点设置
+			r.Combo("/site").Get(manager.SiteViewHandler).Post(bindIgnErr(form.Site{}), manager.SiteActionHandler)
 		}, reqManager)
 
 		// CAS 协议实现

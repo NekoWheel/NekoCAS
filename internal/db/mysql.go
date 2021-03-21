@@ -24,7 +24,7 @@ func ConnDB() error {
 		return errors.Wrap(err, "connect database")
 	}
 
-	err = db.AutoMigrate(&User{}, &Service{})
+	err = db.AutoMigrate(&User{}, &Service{}, &Setting{})
 	if err != nil {
 		return errors.Wrap(err, "auto migrate")
 	}
