@@ -7,13 +7,17 @@ import (
 	"github.com/go-macaron/cache"
 	"github.com/unknwon/com"
 	"gorm.io/gorm"
+	log "unknwon.dev/clog/v2"
 )
 
 func ActivationViewHandler(c *context.Context, cache cache.Cache) {
 	key := "Activate_Mail_" + com.ToStr(c.User.ID)
 	if !cache.IsExist(key) {
 		code := c.User.GetActivationCode()
-		_ = mail.SendActivationMail(c.User.Email, code)
+		err := mail.SendActivationMail(c.User.Email, code)
+		if err != nil {
+			log.Error("Failed to send activation email to %q with error: %v", c.User.Email, err)
+		}
 		_ = cache.Put(key, true, 120)
 	}
 
@@ -26,6 +30,7 @@ func ActivationActionHandler(c *context.Context, cache cache.Cache) {
 		code := c.User.GetActivationCode()
 		err := mail.SendActivationMail(c.User.Email, code)
 		if err != nil {
+			log.Error("Failed to send activation email to %q with error: %v", c.User.Email, err)
 			c.RenderWithErr("服务内部错误，发送邮件失败！", "activate", nil)
 			return
 		}
