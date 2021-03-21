@@ -50,7 +50,7 @@ func SendActivationMail(to, code string) error {
 		"Email":    to,
 		"Link":     conf.Get().Site.BaseURL + "/activate_code?code=" + code,
 	}
-	body, err := render("activate", data)
+	body, err := render("mail/activate", data)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func SendLostPasswordMail(to, code string) error {
 		"Email":    to,
 		"Link":     conf.Get().Site.BaseURL + "/reset_password?code=" + code,
 	}
-	body, err := render("reset_password", data)
+	body, err := render("mail/reset_password", data)
 	if err != nil {
 		return err
 	}
