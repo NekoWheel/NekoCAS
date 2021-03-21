@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/NekoWheel/NekoCAS/internal/conf"
+	"github.com/NekoWheel/NekoCAS/internal/filesystem"
 	"github.com/NekoWheel/NekoCAS/internal/spec/v1"
 	"github.com/NekoWheel/NekoCAS/internal/spec/v2"
 	"github.com/NekoWheel/NekoCAS/internal/web/account"
@@ -12,6 +13,8 @@ import (
 	"github.com/NekoWheel/NekoCAS/internal/web/manager"
 	"github.com/NekoWheel/NekoCAS/internal/web/middleware"
 	"github.com/NekoWheel/NekoCAS/internal/web/template"
+	"github.com/NekoWheel/NekoCAS/public"
+	"github.com/NekoWheel/NekoCAS/templates"
 	"github.com/go-macaron/binding"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
@@ -19,15 +22,37 @@ import (
 	"gopkg.in/macaron.v1"
 )
 
+// newMacaron 初始化一个新的 Macaron 实例。
+func newMacaron() *macaron.Macaron {
+	m := macaron.New()
+	m.Use(macaron.Logger())
+	m.Use(macaron.Recovery())
+	m.Use(macaron.Statics(macaron.StaticOptions{
+		FileSystem: http.FS(public.FS),
+	}, "."))
+
+	return m
+}
+
 func Run() {
-	r := macaron.Classic()
+	r := newMacaron()
+
+	var templateFS macaron.TemplateFileSystem
+	if macaron.Env == macaron.PROD {
+		templateFS = filesystem.NewFS(templates.FS)
+	}
 
 	// 登录登出状态
 	reqSignIn := context.Toggle(&context.ToggleOptions{SignInRequired: true})
 	reqSignOut := context.Toggle(&context.ToggleOptions{SignOutRequired: true})
 	reqManager := context.Toggle(&context.ToggleOptions{SignInRequired: true, AdminRequired: true})
 
-	renderOpt := template.RenderOptions()
+	renderOpt := macaron.RenderOptions{
+		Directory:          "templates",
+		IndentJSON:         macaron.Env != macaron.PROD,
+		Funcs:              template.FuncMap(),
+		TemplateFileSystem: templateFS,
+	}
 	r.Use(macaron.Renderer(renderOpt))
 	r.Use(cache.Cacher())
 

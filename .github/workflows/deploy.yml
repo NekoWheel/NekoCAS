@@ -54,6 +54,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: ${{ secrets.DOCKER_REGISTRY }}
           tags: ${{ steps.create_docker_tags.outputs.tags }}
+          
   deploy:
     name: Deploy to Servers
     runs-on: ubuntu-latest
