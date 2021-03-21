@@ -53,6 +53,11 @@ func RegisterActionHandler(c *context.Context, f form.Register, cache cache.Cach
 		return
 	}
 
+	if f.Privacy == "" {
+		c.RenderWithErr("请同意隐私政策", "register", &f)
+		return
+	}
+
 	u := &db.User{
 		NickName: f.NickName,
 		Email:    f.Mail,
