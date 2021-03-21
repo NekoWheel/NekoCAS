@@ -107,7 +107,7 @@ func Contexter() macaron.Handler {
 
 		// 站点设置
 		c.Setting = &setting{
-			OpenRegister:  db.MustGetSetting("open_setting", "off"),
+			OpenRegister:  db.MustGetSetting("open_register", "on"),
 			SiteLogo:      db.MustGetSetting("site_logo", "https://cas.n3ko.co/static/NekoWheel.png"),
 			MailWhitelist: db.MustGetSetting("mail_whitelist"),
 			Privacy:       db.MustGetSetting("privacy"),

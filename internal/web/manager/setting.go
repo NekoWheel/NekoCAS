@@ -19,14 +19,14 @@ func SiteActionHandler(c *context.Context, f form.Site) {
 	}
 
 	if f.OpenRegister {
-		err := db.SetSetting("open_setting", "on")
+		err := db.SetSetting("open_register", "on")
 		if err != nil {
-			log.Error("Failed to set %q to %q", "open_setting", "on")
+			log.Error("Failed to set %q to %q", "open_register", "on")
 		}
 	} else {
-		err := db.SetSetting("open_setting", "off")
+		err := db.SetSetting("open_register", "off")
 		if err != nil {
-			log.Error("Failed to set %q to %q", "open_setting", "off")
+			log.Error("Failed to set %q to %q", "open_register", "off")
 		}
 	}
 
