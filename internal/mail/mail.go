@@ -2,12 +2,11 @@ package mail
 
 import (
 	"fmt"
-	"html/template"
 	"sync"
-	"time"
 
 	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/NekoWheel/NekoCAS/internal/filesystem"
+	templ "github.com/NekoWheel/NekoCAS/internal/web/template"
 	"github.com/NekoWheel/NekoCAS/templates"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/macaron.v1"
@@ -27,13 +26,9 @@ func render(tpl string, data map[string]interface{}) (string, error) {
 		}
 
 		opt := &macaron.RenderOptions{
-			Directory:  "templates",
-			IndentJSON: macaron.Env != macaron.PROD,
-			Funcs: []template.FuncMap{map[string]interface{}{
-				"Year": func() int {
-					return time.Now().Year()
-				},
-			}},
+			Directory:          "templates",
+			IndentJSON:         macaron.Env != macaron.PROD,
+			Funcs:              templ.FuncMap(),
 			TemplateFileSystem: templateFS,
 		}
 
