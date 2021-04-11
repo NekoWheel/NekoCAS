@@ -82,7 +82,7 @@ func Run() {
 			r.Get("/", account.DashboardViewHandler)
 			r.Combo("/profile").Get(account.ProfileViewHandler)
 			r.Combo("/profile/edit").Get(account.ProfileEditViewHandler).Post(bindIgnErr(form.UpdateProfile{}), account.ProfileEditActionHandler)
-			r.Post("/logout", account.LogoutHandler)
+			r.Combo("/logout", middleware.ServicePreCheck).Get(account.LogoutViewHandler).Post(account.LogoutActionHandler)
 			r.Combo("/activate").Get(account.ActivationViewHandler).Post(account.ActivationActionHandler)
 		}, reqSignIn)
 

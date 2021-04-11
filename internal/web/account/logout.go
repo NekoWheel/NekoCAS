@@ -4,8 +4,13 @@ import (
 	"github.com/NekoWheel/NekoCAS/internal/web/context"
 )
 
-func LogoutHandler(c *context.Context) {
-	// TODO: url
+func LogoutViewHandler(c *context.Context) {
+	c.Data["Service"] = c.Service
+	c.Success("logout")
+}
+
+func LogoutActionHandler(c *context.Context) {
+	c.Data["Service"] = c.Service
 	_ = c.Session.Destory(c.Context)
 	c.Success("logout")
 }
