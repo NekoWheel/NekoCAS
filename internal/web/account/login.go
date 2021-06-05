@@ -49,6 +49,12 @@ func LoginActionHandler(c *context.Context, f form.Login) {
 	c.User = u
 	_ = c.Session.Set("uid", u.ID)
 
+	// 判断用户是否已经激活。
+	if !c.User.IsActive {
+		c.Redirect("/")
+		return
+	}
+
 	// 携带 Ticket 跳转到对应服务
 	if c.Service.ID != 0 {
 		redirectWithTicket(c)
