@@ -5,53 +5,63 @@ import (
 	"github.com/pkg/errors"
 )
 
-var COMMIT_SHA = "debug"
+// CommitSHA 在编译时注入，为当前 Git Commit 哈希值。
+var CommitSHA = "debug"
 
-type config struct {
-	Site struct {
-		Name        string `toml:"name"`
-		BaseURL     string `toml:"base_url"`
-		Port        int    `toml:"port"`
-		ICP         string `toml:"icp"`
-		SecurityKey string `toml:"security_key"`
-		CSRFKey     string `toml:"csrf_key"`
-	} `toml:"site"`
+var Site SiteSegment
 
-	MySQL struct {
-		User     string `toml:"user"`
-		Password string `toml:"password"`
-		Addr     string `toml:"addr"`
-		Name     string `toml:"name"`
-	} `toml:"mysql"`
-
-	Redis struct {
-		Addr     string `toml:"addr"`
-		Password string `toml:"password"`
-	} `toml:"redis"`
-
-	Mail struct {
-		Account  string `toml:"account"`
-		Password string `toml:"password"`
-		SMTP     string `toml:"smtp"`
-		Port     int    `toml:"port"`
-	} `toml:"mail"`
+type SiteSegment struct {
+	Name        string `toml:"name"`
+	BaseURL     string `toml:"base_url"`
+	Port        int    `toml:"port"`
+	ICP         string `toml:"icp"`
+	SecurityKey string `toml:"security_key"`
+	CSRFKey     string `toml:"csrf_key"`
 }
 
-var conf *config
+var MySQL MySQLSegment
 
+type MySQLSegment struct {
+	User     string `toml:"user"`
+	Password string `toml:"password"`
+	Addr     string `toml:"addr"`
+	Name     string `toml:"name"`
+}
+
+var Redis RedisSegment
+
+type RedisSegment struct {
+	Addr     string `toml:"addr"`
+	Password string `toml:"password"`
+}
+
+var Mail MailSegment
+
+type MailSegment struct {
+	Account  string `toml:"account"`
+	Password string `toml:"password"`
+	SMTP     string `toml:"smtp"`
+	Port     int    `toml:"port"`
+}
+
+// Load 从配置文件中加载配置。
 func Load() error {
-	c := config{}
+	var config struct {
+		Site  SiteSegment  `toml:"site"`
+		MySQL MySQLSegment `toml:"mysql"`
+		Redis RedisSegment `toml:"redis"`
+		Mail  MailSegment  `toml:"mail"`
+	}
 
-	_, err := toml.DecodeFile("./config/nekocas.toml", &c)
+	_, err := toml.DecodeFile("./config/nekocas.toml", &config)
 	if err != nil {
 		return errors.Wrap(err, "decode config file")
 	}
 
-	conf = &c
-	return nil
-}
+	Site = config.Site
+	MySQL = config.MySQL
+	Redis = config.Redis
+	Mail = config.Mail
 
-// Get returns the config struct.
-func Get() *config {
-	return conf
+	return nil
 }

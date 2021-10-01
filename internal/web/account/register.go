@@ -3,12 +3,13 @@ package account
 import (
 	"strings"
 
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/mail"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
 	"github.com/go-macaron/cache"
 	log "unknwon.dev/clog/v2"
+
+	"github.com/NekoWheel/NekoCAS/internal/context"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/form"
+	"github.com/NekoWheel/NekoCAS/internal/mail"
 )
 
 func RegisterViewHandler(c *context.Context) {

@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/unknwon/com"
+
+	"github.com/NekoWheel/NekoCAS/internal/conf"
 )
 
 // HashEmail 将邮箱地址 Md5 转换成 Avatar 头像哈希
@@ -44,7 +45,7 @@ func CreateTimeLimitCode(data string, minutes int, startInf interface{}) string 
 	endStr = end.Format(format)
 
 	sh := sha1.New()
-	_, _ = sh.Write([]byte(data + conf.Get().Site.SecurityKey + startStr + endStr + com.ToStr(minutes)))
+	_, _ = sh.Write([]byte(data + conf.Site.SecurityKey + startStr + endStr + com.ToStr(minutes)))
 	encoded := hex.EncodeToString(sh.Sum(nil))
 
 	code := fmt.Sprintf("%s%06d%s", startStr, minutes, encoded)

@@ -24,7 +24,7 @@ jobs:
           go mod tidy
       - name: Build
         run: |
-          CGO_ENABLED=0 go build -v -ldflags "-w -s -extldflags '-static' -X 'github.com/NekoWheel/NekoCAS/internal/conf.COMMIT_SHA=$GITHUB_SHA'" -o NekoCAS .
+          CGO_ENABLED=0 go build -v -ldflags "-w -s -extldflags '-static' -X 'github.com/NekoWheel/NekoCAS/internal/conf.CommitSHA=$GITHUB_SHA'" -o NekoCAS .
           pwd
       - name: Archive production artifacts
         uses: actions/upload-artifact@v1
@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: ${{ secrets.DOCKER_REGISTRY }}
           tags: ${{ steps.create_docker_tags.outputs.tags }}
-          
+
   deploy:
     name: Deploy to Servers
     runs-on: ubuntu-latest

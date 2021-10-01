@@ -1,8 +1,8 @@
 package manager
 
 import (
+	"github.com/NekoWheel/NekoCAS/internal/context"
 	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
 )
 
 func UsersViewHandler(c *context.Context) {

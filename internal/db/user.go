@@ -8,15 +8,16 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/NekoWheel/NekoCAS/internal/helper"
 	"github.com/pkg/errors"
 	"github.com/thanhpk/randstr"
 	"github.com/unknwon/com"
 	"golang.org/x/crypto/pbkdf2"
 	"gorm.io/gorm"
+
+	"github.com/NekoWheel/NekoCAS/internal/helper"
 )
 
-// User
+// User 为用户表。
 type User struct {
 	gorm.Model
 
@@ -26,18 +27,17 @@ type User struct {
 	Salt     string
 	Avatar   string
 
-	// Permission
 	IsActive bool
 	IsAdmin  bool
 }
 
-// EncodePassword 密码加盐处理
+// EncodePassword 对密码进行加盐处理。
 func (u *User) EncodePassword() {
 	newPassword := pbkdf2.Key([]byte(u.Password), []byte(u.Salt), 10000, 50, sha256.New)
 	u.Password = fmt.Sprintf("%x", newPassword)
 }
 
-// ValidatePassword 检查输入的密码是否正确
+// ValidatePassword 检查输入的密码是否正确。
 func (u *User) ValidatePassword(password string) bool {
 	newUser := &User{Password: password, Salt: u.Salt}
 	newUser.EncodePassword()
@@ -61,7 +61,7 @@ func VerifyUserActiveCode(code string) *User {
 
 	hexStr := code[helper.TIME_LIMIT_CODE_LENGTH:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
-		if user := GetUserByEmail(string(b)); user == nil {
+		if user, err := GetUserByEmail(string(b)); err != nil {
 			return nil
 		} else {
 			prefix := code[:helper.TIME_LIMIT_CODE_LENGTH]
@@ -75,12 +75,12 @@ func VerifyUserActiveCode(code string) *User {
 	return nil
 }
 
-// GetUserSalt 返回用户随机的盐
+// GetUserSalt 返回随机字符串作为用户的盐。
 func GetUserSalt() string {
 	return randstr.String(10)
 }
 
-// CreateUser 新建一个新的用户
+// CreateUser 新建一个新的用户。
 func CreateUser(u *User) error {
 	if err := isUsernameAllowed(u.NickName); err != nil {
 		return err
@@ -101,31 +101,28 @@ func CreateUser(u *User) error {
 	u.Salt = GetUserSalt()
 	u.EncodePassword()
 
-	tx := db.Begin()
-	if tx.Create(u).RowsAffected != 1 {
-		tx.Rollback()
-		return errors.Errorf("数据库错误")
+	if err := db.Create(u).Error; err != nil {
+		return errors.Wrap(err, "添加用户")
 	}
-	tx.Commit()
 	return nil
 }
 
-// 用户验证
+var ErrBadCredential = errors.New("电子邮箱或密码错误")
+
+// UserAuthenticate 验证用户传入的用户名与密码。
 func UserAuthenticate(email string, password string) (*User, error) {
 	user := new(User)
-	db.Model(&User{}).Where(&User{Email: email}).Find(&user)
-	// 用户不存在
-	if user.ID == 0 {
-		return nil, errors.New("电子邮箱或密码错误")
+	if err := db.Model(&User{}).Where(&User{Email: email}).First(&user).Error; err != nil {
+		return nil, ErrBadCredential
 	}
 
 	if !user.ValidatePassword(password) {
-		return nil, errors.New("电子邮箱或密码错误")
+		return nil, ErrBadCredential
 	}
 	return user, nil
 }
 
-// UpdateUserProfile 修改用户信息
+// UpdateUserProfile 修改用户信息。
 func UpdateUserProfile(u *User) error {
 	if u.Password != "" {
 		u.EncodePassword()
@@ -140,39 +137,46 @@ func UpdateUserProfile(u *User) error {
 	}).Error
 }
 
-func GetUserByID(uid uint) *User {
+// MustGetUserByID 根据传入的用户 ID 查询对应的用户。
+func MustGetUserByID(uid uint) *User {
 	var u User
-	db.Model(&User{}).Where(&User{
+	_ = db.Model(&User{}).Where(&User{
 		Model: gorm.Model{
 			ID: uid,
 		},
-	}).Find(&u)
-	if u.ID == 0 {
-		return nil
-	}
+	}).First(&u)
 	return &u
 }
 
-func GetUserByEmail(email string) *User {
+var ErrUserNotFound = errors.New("用户不存在")
+
+// GetUserByEmail 根据给定的电子邮箱地址查询对应的用户。
+func GetUserByEmail(email string) (*User, error) {
 	var u User
-	db.Model(&User{}).Where(&User{
+	if err := db.Model(&User{}).Where(&User{
 		Email: email,
-	}).Find(&u)
-	if u.ID == 0 {
-		return nil
+	}).First(&u).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, ErrUserNotFound
+		}
+		return nil, errors.Wrap(err, "查询用户")
 	}
-	return &u
+
+	return &u, nil
 }
 
+// GetUserByNickName 根据给定的用户昵称查询对应的用户。
 func GetUserByNickName(nickName string) (*User, error) {
 	var u User
-	err := db.Model(&User{}).Where(&User{
+	if err := db.Model(&User{}).Where(&User{
 		NickName: nickName,
-	}).First(&u).Error
-
-	if err != nil {
-		return nil, err
+	}).First(&u).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, ErrUserNotFound
+		}
+		return nil, errors.Wrap(err, "查询用户")
 	}
+
 	return &u, nil
 }
 
@@ -215,24 +219,24 @@ func isUsernameAllowed(name string) error {
 	return nil
 }
 
-// IsUserExist 检查用户昵称是否重复
+// IsUserExist 检查用户昵称是否重复。
 func IsUserExist(name string) bool {
 	if name == "" {
 		return false
 	}
 	var u User
-	db.Model(&User{}).Where(&User{NickName: name}).Find(&u)
-	return u.ID != 0
+	err := db.Model(&User{}).Where(&User{NickName: name}).First(&u).Error
+	return err == nil
 }
 
-// IsEmailUsed 检查邮箱是否重复
+// IsEmailUsed 检查邮箱是否重复。
 func IsEmailUsed(email string) bool {
 	if email == "" {
 		return false
 	}
 	var u User
-	db.Model(&User{}).Where(&User{Email: email}).Find(&u)
-	return u.ID != 0
+	err := db.Model(&User{}).Where(&User{Email: email}).First(&u).Error
+	return err == nil
 }
 
 type ErrUserAlreadyExist struct {

@@ -1,115 +1,119 @@
 {{template "header" .}}
 <body class="antialiased">
-<div class="page">
-    {{ template "layouts/bar" .}}
-    <div class="content">
-        <div class="container-xl">
-            <div class="page-header d-print-none">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h2 class="page-title">
-                            服务管理
-                        </h2>
-                    </div>
-                    <div class="col-auto ms-auto d-print-none">
-                        <div class="d-flex">
-                            <a href="/manage/services/new" class="btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                     stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                添加新服务
-                            </a>
-                        </div>
-                    </div>
-                </div>
+<div class="page-wrapper">
+  {{ template "layouts/bar" .}}
+  <div class="content">
+    <div class="container-xl">
+      <div class="page-header d-print-none">
+        <div class="row align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              服务管理
+            </h2>
+          </div>
+          <div class="col-auto ms-auto d-print-none">
+            <div class="d-flex">
+              <a href="/manage/services/new" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                添加新服务
+              </a>
             </div>
-            {{template "layouts/alert" .}}
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="table table-vcenter card-table">
-                        <thead>
-                        <tr>
-                            <th>服务名</th>
-                            <th>白名单域名</th>
-                            <th>状态</th>
-                            <th class="w-1">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{ range .Services }}
-                        <tr>
-                            <td>
-                                <div class="d-flex py-1 align-items-center">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        {{template "layouts/alert" .}}
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+              <tr>
+                <th>服务名</th>
+                <th>白名单域名</th>
+                <th>状态</th>
+                <th class="w-1">操作</th>
+              </tr>
+              </thead>
+              <tbody>
+              {{ range .Services }}
+              <tr>
+                <td>
+                  <div class="d-flex py-1 align-items-center">
                                     <span class="avatar me-2"
                                           style="background-image: url({{.Avatar}})"></span>
-                                    <div class="flex-fill">
-                                        <div class="font-weight-medium">{{.Name}}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-muted">
-                                {{ .Domain }}
-                            </td>
-                            <td>
-                                {{ if .Ban }}
-                                <span class="badge bg-red-lt">封禁</span>
-                                {{ else }}
-                                <span class="badge bg-green-lt">正常</span>
-                                {{ end }}
-                            </td>
-                            <td>
-                                <div class="btn-list flex-nowrap">
-                                    <a href="/manage/services/edit?id={{.ID}}" class="btn btn-white">
-                                        编辑
-                                    </a>
-                                    <a href="/manage/services/delete?id={{.ID}}" class="btn btn-red">
-                                        删除
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {{ end }}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-footer d-flex align-items-center">
-                    <p class="m-0 text-muted">第 <span>{{.From}}</span> - <span>{{.To}}</span>
-                        个 |
-                        总共
-                        <span>{{.Total}}</span>
-                        个</p>
-                    <ul class="pagination m-0 ms-auto">
-                        <li class="page-item {{if lt .PreviousPage 1}} disabled {{end}}">
-                            <a class="page-link" href="?p={{.PreviousPage}}" tabindex="-1" aria-disabled="true">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                     stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <polyline points="15 6 9 12 15 18"></polyline>
-                                </svg>
-                                上一页
-                            </a>
-                        </li>
-                        <li class="page-item {{if gt .NextPage .LastPage}} disabled {{end}}">
-                            <a class="page-link" href="?p={{.NextPage}}">
-                                下一页
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                     stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <polyline points="9 6 15 12 9 18"></polyline>
-                                </svg>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                    <div class="flex-fill">
+                      <div class="font-weight-medium">{{.Name}}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">
+                  {{ .Domain }}
+                </td>
+                <td>
+                  {{ if .Ban }}
+                  <span class="badge bg-red-lt">封禁</span>
+                  {{ else }}
+                  <span class="badge bg-green-lt">正常</span>
+                  {{ end }}
+                </td>
+                <td>
+                  <div class="btn-list flex-nowrap">
+                    <a href="/manage/services/edit?id={{.ID}}" class="btn btn-white">
+                      编辑
+                    </a>
+                    <a href="/manage/services/delete?id={{.ID}}" class="btn btn-red">
+                      删除
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {{ end }}
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer d-flex align-items-center">
+            <p class="m-0 text-muted">第 <span>{{.From}}</span> - <span>{{.To}}</span>
+              个 |
+              总共
+              <span>{{.Total}}</span>
+              个</p>
+            <ul class="pagination m-0 ms-auto">
+              <li class="page-item {{if lt .PreviousPage 1}} disabled {{end}}">
+                <a class="page-link" href="?p={{.PreviousPage}}" tabindex="-1" aria-disabled="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <polyline points="15 6 9 12 15 18"></polyline>
+                  </svg>
+                  上一页
+                </a>
+              </li>
+              <li class="page-item {{if gt .NextPage .LastPage}} disabled {{end}}">
+                <a class="page-link" href="?p={{.NextPage}}">
+                  下一页
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <polyline points="9 6 15 12 9 18"></polyline>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        {{ template "layouts/privacy" .}}
+      </div>
     </div>
+    {{ template "layouts/privacy" .}}
+  </div>
 </div>
 {{template "footer" .}}

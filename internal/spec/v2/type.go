@@ -53,14 +53,14 @@ type CASProxyFailure struct {
 	Message string   `xml:",chardata"`
 }
 
-// newCASResponse 创建一个新的 CAS XML 返回
+// newCASResponse 创建一个新的 CAS XML 返回。
 func newCASResponse() CASServiceResponse {
 	return CASServiceResponse{
 		Xmlns: "http://www.yale.edu/tp/cas",
 	}
 }
 
-// NewCASSuccessResponse 创建一个 CAS XML 成功返回，包含用户信息
+// NewCASSuccessResponse 创建一个 CAS XML 成功返回，包含用户信息。
 func NewCASSuccessResponse(u *db.User) []byte {
 	s := newCASResponse()
 	s.Success = &CASAuthenticationSuccess{
@@ -73,7 +73,7 @@ func NewCASSuccessResponse(u *db.User) []byte {
 	return x
 }
 
-// NewCASFailureResponse 创建一个 CAS XML 失败返回，包含错误码以及错误信息
+// NewCASFailureResponse 创建一个 CAS XML 失败返回，包含错误码以及错误信息。
 func NewCASFailureResponse(c string, msg string) []byte {
 	f := newCASResponse()
 	f.Failure = &CASAuthenticationFailure{
@@ -84,7 +84,7 @@ func NewCASFailureResponse(c string, msg string) []byte {
 	return x
 }
 
-// NewCASProxySuccessResponse 创建一个 CAS Proxy XML 成功返回，包含 Ticket
+// NewCASProxySuccessResponse 创建一个 CAS Proxy XML 成功返回，包含 Ticket。
 func NewCASProxySuccessResponse(pt string) []byte {
 	s := newCASResponse()
 	s.ProxySuccess = &CASProxySuccess{
@@ -94,7 +94,7 @@ func NewCASProxySuccessResponse(pt string) []byte {
 	return x
 }
 
-// NewCASProxyFailureResponse 创建一个 CAS Proxy XML 失败返回，包含错误码以及错误信息
+// NewCASProxyFailureResponse 创建一个 CAS Proxy XML 失败返回，包含错误码以及错误信息。
 func NewCASProxyFailureResponse(c string, msg string) []byte {
 	f := newCASResponse()
 	f.ProxyFailure = &CASProxyFailure{

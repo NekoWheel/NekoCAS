@@ -1,52 +1,56 @@
 {{template "header" .}}
 <body class="antialiased">
-<div class="page">
-    {{ template "layouts/bar" .}}
-    <div class="content">
-        <div class="container-xl">
-            <div class="page-header d-print-none">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h2 class="page-title">
-                            站点管理
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            {{template "layouts/alert" .}}
-            <div class="col-lg-5">
-                <form method="post">
-                    {{.CSRFTokenHTML}}
-                    {{template "layouts/alert" .}}
-                    <div>
-                        <label class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="open_register"
-                                   {{ if eq .Setting.OpenRegister "on" }} checked {{end}}>
-                            <span class="form-check-label">开放注册</span>
-                        </label>
-                    </div>
-                    <hr>
-                    <div class="mb-3">
-                        <label class="form-label">站点 Logo</label>
-                        <input type="text" class="form-control" name="site_logo" value="{{.Setting.SiteLogo}}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">邮箱域名白名单</label>
-                        限定能够注册的邮箱域名，多个域名使用半角逗号分隔。若留空则表示不显示。
-                        <input type="text" class="form-control" name="mail_whitelist"
-                               value="{{.Setting.MailWhitelist}}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">隐私政策</label>
-                        <textarea class="form-control" name="privacy">{{.Setting.Privacy}}</textarea>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-blue">保存设置</button>
-                    </div>
-                </form>
-            </div>
+<div class="page-wrapper">
+  {{ template "layouts/bar" .}}
+  <div class="content">
+    <div class="container-xl">
+      <div class="page-header d-print-none">
+        <div class="row align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              站点管理
+            </h2>
+          </div>
         </div>
-        {{ template "layouts/privacy" .}}
+      </div>
     </div>
+    <div class="page-body">
+      <div class="container-xl">
+        {{template "layouts/alert" .}}
+        <div class="col-lg-5">
+          <form method="post">
+            {{.CSRFTokenHTML}}
+            {{template "layouts/alert" .}}
+            <div>
+              <label class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="open_register"
+                       {{ if eq .Setting.OpenRegister "on" }} checked {{end}}>
+                <span class="form-check-label">开放注册</span>
+              </label>
+            </div>
+            <hr>
+            <div class="mb-3">
+              <label class="form-label">站点 Logo</label>
+              <input type="text" class="form-control" name="site_logo" value="{{.Setting.SiteLogo}}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">邮箱域名白名单</label>
+              限定能够注册的邮箱域名，多个域名使用半角逗号分隔。若留空则表示不显示。
+              <input type="text" class="form-control" name="mail_whitelist"
+                     value="{{.Setting.MailWhitelist}}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">隐私政策</label>
+              <textarea class="form-control" name="privacy">{{.Setting.Privacy}}</textarea>
+            </div>
+            <div>
+              <button type="submit" class="btn btn-blue">保存设置</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {{ template "layouts/privacy" .}}
+  </div>
 </div>
 {{template "footer" .}}

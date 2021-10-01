@@ -1,7 +1,7 @@
 package account
 
 import (
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
+	"github.com/NekoWheel/NekoCAS/internal/context"
 )
 
 func LogoutViewHandler(c *context.Context) {

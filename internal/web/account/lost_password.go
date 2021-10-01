@@ -3,12 +3,13 @@ package account
 import (
 	"fmt"
 
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/mail"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
 	"github.com/go-macaron/cache"
 	"github.com/unknwon/com"
+
+	"github.com/NekoWheel/NekoCAS/internal/context"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/form"
+	"github.com/NekoWheel/NekoCAS/internal/mail"
 )
 
 func LostPasswordHandler(c *context.Context) {
@@ -16,8 +17,8 @@ func LostPasswordHandler(c *context.Context) {
 }
 
 func LostPasswordActionHandler(c *context.Context, f form.LostPassword, cache cache.Cache) {
-	user := db.GetUserByEmail(f.Email)
-	if user == nil {
+	user, err := db.GetUserByEmail(f.Email)
+	if err != nil {
 		c.RenderWithErr("该邮箱不存在", "lost_password", nil)
 		return
 	}

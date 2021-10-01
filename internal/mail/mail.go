@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"sync"
 
+	"gopkg.in/gomail.v2"
+	"gopkg.in/macaron.v1"
+
 	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/NekoWheel/NekoCAS/internal/filesystem"
 	templ "github.com/NekoWheel/NekoCAS/internal/web/template"
 	"github.com/NekoWheel/NekoCAS/templates"
-	"gopkg.in/gomail.v2"
-	"gopkg.in/macaron.v1"
 )
 
 var (
@@ -27,7 +28,6 @@ func render(tpl string, data map[string]interface{}) (string, error) {
 		}
 
 		opt := &macaron.RenderOptions{
-			Directory:          "templates",
 			IndentJSON:         macaron.Env != macaron.PROD,
 			Funcs:              templ.FuncMap(),
 			TemplateFileSystem: templateFS,
@@ -46,46 +46,46 @@ func render(tpl string, data map[string]interface{}) (string, error) {
 
 func SendActivationMail(to, code string) error {
 	data := map[string]interface{}{
-		"SiteName": conf.Get().Site.Name,
+		"SiteName": conf.Site.Name,
 		"Email":    to,
-		"Link":     conf.Get().Site.BaseURL + "/activate_code?code=" + code,
+		"Link":     conf.Site.BaseURL + "/activate_code?code=" + code,
 	}
 	body, err := render("mail/activate", data)
 	if err != nil {
 		return err
 	}
 
-	title := fmt.Sprintf("激活您的 %s 账号", conf.Get().Site.Name)
+	title := fmt.Sprintf("激活您的 %s 账号", conf.Site.Name)
 	return send(to, title, body)
 }
 
 func SendLostPasswordMail(to, code string) error {
 	data := map[string]interface{}{
-		"SiteName": conf.Get().Site.Name,
+		"SiteName": conf.Site.Name,
 		"Email":    to,
-		"Link":     conf.Get().Site.BaseURL + "/reset_password?code=" + code,
+		"Link":     conf.Site.BaseURL + "/reset_password?code=" + code,
 	}
 	body, err := render("mail/reset_password", data)
 	if err != nil {
 		return err
 	}
 
-	title := fmt.Sprintf("您正在找回您的 %s 账号密码", conf.Get().Site.Name)
+	title := fmt.Sprintf("您正在找回您的 %s 账号密码", conf.Site.Name)
 	return send(to, title, body)
 }
 
 func send(to, title, content string) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", conf.Get().Mail.Account)
+	m.SetHeader("From", conf.Mail.Account)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", title)
 	m.SetBody("text/html", content)
 
 	d := gomail.NewDialer(
-		conf.Get().Mail.SMTP,
-		conf.Get().Mail.Port,
-		conf.Get().Mail.Account,
-		conf.Get().Mail.Password,
+		conf.Mail.SMTP,
+		conf.Mail.Port,
+		conf.Mail.Account,
+		conf.Mail.Password,
 	)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	return d.DialAndSend(m)

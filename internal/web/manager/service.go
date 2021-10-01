@@ -3,10 +3,13 @@ package manager
 import (
 	"strings"
 
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	log "unknwon.dev/clog/v2"
+
+	"github.com/NekoWheel/NekoCAS/internal/context"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/form"
 )
 
 func ServicesViewHandler(c *context.Context) {
@@ -30,7 +33,15 @@ func ServicesViewHandler(c *context.Context) {
 	c.Data["LastPage"] = total/int64(limit) + 1
 
 	c.Data["Total"] = total
-	c.Data["Services"] = db.GetServices((page-1)*limit, limit)
+
+	services, err := db.GetServices((page-1)*limit, limit)
+	if err != nil {
+		log.Error("Failed to get services: %v", err)
+		c.Error(errors.New("服务内部错误"))
+		return
+	}
+	c.Data["Services"] = services
+
 	c.Success("manage/services")
 }
 
@@ -66,10 +77,15 @@ func NewServiceActionHandler(c *context.Context, f form.NewService) {
 
 func EditServiceViewHandler(c *context.Context) {
 	id := c.QueryInt("id")
-	service := db.GetServiceByID(uint(id))
-	if service == nil {
-		c.Flash.Error("服务不存在")
-		c.Redirect("/manage/services")
+	service, err := db.GetServiceByID(uint(id))
+	if err != nil {
+		if err == db.ErrorServiceNotFound {
+			c.Flash.Error("服务不存在")
+			c.Redirect("/manage/services")
+			return
+		}
+		log.Error("Failed to get service: %v", err)
+		c.Error(errors.New("服务内部错误"))
 		return
 	}
 
@@ -79,10 +95,15 @@ func EditServiceViewHandler(c *context.Context) {
 
 func EditServiceActionHandler(c *context.Context, f form.EditService) {
 	id := c.QueryInt("id")
-	service := db.GetServiceByID(uint(id))
-	if service == nil {
-		c.Flash.Error("服务不存在")
-		c.Redirect("/manage/services")
+	_, err := db.GetServiceByID(uint(id))
+	if err != nil {
+		if err == db.ErrorServiceNotFound {
+			c.Flash.Error("服务不存在")
+			c.Redirect("/manage/services")
+			return
+		}
+		log.Error("Failed to get service: %v", err)
+		c.Error(errors.New("服务内部错误"))
 		return
 	}
 
@@ -114,9 +135,15 @@ func EditServiceActionHandler(c *context.Context, f form.EditService) {
 
 func DeleteServiceViewHandler(c *context.Context) {
 	id := c.QueryInt("id")
-	service := db.GetServiceByID(uint(id))
-	if service == nil {
-		c.Redirect("/manage/services")
+	service, err := db.GetServiceByID(uint(id))
+	if err != nil {
+		if err == db.ErrorServiceNotFound {
+			c.Flash.Error("服务不存在")
+			c.Redirect("/manage/services")
+			return
+		}
+		log.Error("Failed to get service: %v", err)
+		c.Error(errors.New("服务内部错误"))
 		return
 	}
 
@@ -126,9 +153,15 @@ func DeleteServiceViewHandler(c *context.Context) {
 
 func DeleteServiceActionHandler(c *context.Context) {
 	id := c.QueryInt("id")
-	service := db.GetServiceByID(uint(id))
-	if service == nil {
-		c.Redirect("/manage/services")
+	_, err := db.GetServiceByID(uint(id))
+	if err != nil {
+		if err == db.ErrorServiceNotFound {
+			c.Flash.Error("服务不存在")
+			c.Redirect("/manage/services")
+			return
+		}
+		log.Error("Failed to get service: %v", err)
+		c.Error(errors.New("服务内部错误"))
 		return
 	}
 

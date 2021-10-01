@@ -1,13 +1,14 @@
 package account
 
 import (
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/mail"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
 	"github.com/go-macaron/cache"
 	"github.com/unknwon/com"
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
+
+	"github.com/NekoWheel/NekoCAS/internal/context"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/mail"
 )
 
 func ActivationViewHandler(c *context.Context, cache cache.Cache) {
@@ -18,6 +19,7 @@ func ActivationViewHandler(c *context.Context, cache cache.Cache) {
 		if err != nil {
 			log.Error("Failed to send activation email to %q with error: %v", c.User.Email, err)
 		}
+
 		_ = cache.Put(key, true, 120)
 	}
 
@@ -34,6 +36,7 @@ func ActivationActionHandler(c *context.Context, cache cache.Cache) {
 			c.RenderWithErr("服务内部错误，发送邮件失败！", "activate", nil)
 			return
 		}
+		
 		_ = cache.Put(key, 1, 120)
 	} else {
 		c.Flash.Error("邮件发送过于频繁，请等待 2 分钟后再尝试。")

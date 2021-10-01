@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"github.com/NekoWheel/NekoCAS/internal/context"
 	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
 )
 
 // ServicePreCheck 获取 Service 信息中间件

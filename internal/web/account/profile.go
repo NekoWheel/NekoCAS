@@ -1,9 +1,9 @@
 package account
 
 import (
+	"github.com/NekoWheel/NekoCAS/internal/context"
 	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
+	"github.com/NekoWheel/NekoCAS/internal/form"
 )
 
 func ProfileViewHandler(c *context.Context) {

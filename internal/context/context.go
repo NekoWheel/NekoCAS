@@ -3,19 +3,20 @@ package context
 import (
 	"net/http"
 
-	"github.com/NekoWheel/NekoCAS/internal/conf"
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/helper"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
-	"github.com/NekoWheel/NekoCAS/internal/web/template"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	"gopkg.in/macaron.v1"
 	log "unknwon.dev/clog/v2"
+
+	"github.com/NekoWheel/NekoCAS/internal/conf"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/form"
+	"github.com/NekoWheel/NekoCAS/internal/helper"
+	"github.com/NekoWheel/NekoCAS/internal/web/template"
 )
 
-// Context 请求上下文
+// Context 为请求上下文。
 type Context struct {
 	*macaron.Context
 	Cache   cache.Cache
@@ -37,18 +38,18 @@ type setting struct {
 	Privacy       string
 }
 
-// Success 返回模板，状态码 200
+// Success 返回模板，状态码 200。
 func (c *Context) Success(name string) {
 	c.HTML(http.StatusOK, name)
 }
 
-// Error 返回模板错误页
+// Error 返回模板错误页。
 func (c *Context) Error(err error) {
 	c.Data["ErrorMsg"] = err
 	c.HTML(http.StatusOK, "error")
 }
 
-// RenderWithErr 返回表单报错
+// RenderWithErr 返回表单报错。
 func (c *Context) RenderWithErr(msg, tpl string, f interface{}) {
 	if f != nil {
 		form.Assign(f, c.Data)
@@ -58,7 +59,7 @@ func (c *Context) RenderWithErr(msg, tpl string, f interface{}) {
 	c.HTML(http.StatusOK, tpl)
 }
 
-// HasError 返回表单验证是否有错误
+// HasError 返回表单验证是否有错误。
 func (c *Context) HasError() bool {
 	hasErr, ok := c.Data["HasError"]
 	if !ok {
@@ -69,7 +70,7 @@ func (c *Context) HasError() bool {
 	return hasErr.(bool)
 }
 
-// Contexter initializes a classic context for a request.
+// Contexter 初始化一个请求上下文实例。
 func Contexter() macaron.Handler {
 	return func(ctx *macaron.Context, sess session.Store, f *session.Flash, x csrf.CSRF, cache cache.Cache) {
 		c := &Context{
@@ -117,9 +118,9 @@ func Contexter() macaron.Handler {
 		// 后台菜单
 		c.Data["Tab"] = c.Flash.Get("Tab")
 
-		c.Data["SiteName"] = conf.Get().Site.Name
-		c.Data["CommitSha"] = helper.Substr(conf.COMMIT_SHA, 0, 8)
-		c.Data["CommitLink"] = "https://github.com/NekoWheel/NekoCAS/commit/" + conf.COMMIT_SHA
+		c.Data["SiteName"] = conf.Site.Name
+		c.Data["CommitSha"] = helper.Substr(conf.CommitSHA, 0, 8)
+		c.Data["CommitLink"] = "https://github.com/NekoWheel/NekoCAS/commit/" + conf.CommitSHA
 		c.Data["CSRFToken"] = x.GetToken()
 		c.Data["CSRFTokenHTML"] = template.Safe(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
 		log.Trace("Session ID: %s", sess.ID())

@@ -1,10 +1,11 @@
 package main
 
 import (
+	log "unknwon.dev/clog/v2"
+
 	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/NekoWheel/NekoCAS/internal/db"
 	"github.com/NekoWheel/NekoCAS/internal/web"
-	log "unknwon.dev/clog/v2"
 )
 
 func main() {

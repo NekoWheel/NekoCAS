@@ -8,7 +8,7 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-// NewServiceTicket 生成一个 Ticket
+// NewServiceTicket 生成一个 Ticket。
 func NewServiceTicket(service *Service, user *User) (string, error) {
 	ticket := "ST-" + randstr.String(32)
 	err := red.Set(ticket, fmt.Sprintf("%d|%d", service.ID, user.ID), -1).Err()
@@ -18,7 +18,7 @@ func NewServiceTicket(service *Service, user *User) (string, error) {
 	return ticket, nil
 }
 
-// ValidateServiceTicket 验证 Ticket 是否正确
+// ValidateServiceTicket 验证 Ticket 是否正确。
 func ValidateServiceTicket(service *Service, ticket string) (*User, bool) {
 	u, s, ok := ValidateTicket(ticket)
 	if !ok {
@@ -30,7 +30,7 @@ func ValidateServiceTicket(service *Service, ticket string) (*User, bool) {
 	return u, true
 }
 
-// ValidateTicket 验证 Ticket 是否正确
+// ValidateTicket 验证 Ticket 是否正确。
 func ValidateTicket(ticket string) (*User, *Service, bool) {
 	ticketData, err := red.Get(ticket).Result()
 	if ticketData == "" || err != nil {
@@ -43,15 +43,18 @@ func ValidateTicket(ticket string) (*User, *Service, bool) {
 
 	serviceID := ticketPart[0]
 	userID := ticketPart[1]
+
 	sid, err := strconv.Atoi(serviceID)
 	if err != nil {
 		return nil, nil, false
 	}
+
 	uid, err := strconv.Atoi(userID)
 	if err != nil {
 		return nil, nil, false
 	}
-	user := GetUserByID(uint(uid))
-	service := GetServiceByID(uint(sid))
-	return user, service, true
+
+	user := MustGetUserByID(uint(uid))
+	service, err := GetServiceByID(uint(sid))
+	return user, service, err != nil
 }

@@ -1,10 +1,11 @@
 package manager
 
 import (
-	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
 	log "unknwon.dev/clog/v2"
+
+	"github.com/NekoWheel/NekoCAS/internal/context"
+	"github.com/NekoWheel/NekoCAS/internal/db"
+	"github.com/NekoWheel/NekoCAS/internal/form"
 )
 
 func SiteViewHandler(c *context.Context) {

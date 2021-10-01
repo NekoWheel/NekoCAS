@@ -1,21 +1,24 @@
 {{template "header" .}}
 <body class="antialiased">
-<div class="page">
-    {{ template "layouts/bar" .}}
-    <div class="content">
-        <div class="container-xl">
-            <div class="page-header d-print-none">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h2 class="page-title">
-                            仪表盘
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            <!-- Content here -->
+<div class="page-wrapper">
+  {{ template "layouts/bar" .}}
+  <div class="content">
+    <div class="container-xl">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              仪表盘
+            </h2>
+          </div>
         </div>
-        {{ template "layouts/privacy" .}}
+      </div>
     </div>
+    <div class="page-body">
+      <div class="container-xl">
+      </div>
+    </div>
+    {{ template "layouts/privacy" .}}
+  </div>
 </div>
 {{template "footer" .}}

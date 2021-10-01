@@ -4,14 +4,12 @@ import (
 	"errors"
 	"net/url"
 
+	"github.com/NekoWheel/NekoCAS/internal/context"
 	"github.com/NekoWheel/NekoCAS/internal/db"
-	"github.com/NekoWheel/NekoCAS/internal/web/context"
-	"github.com/NekoWheel/NekoCAS/internal/web/form"
+	"github.com/NekoWheel/NekoCAS/internal/form"
 )
 
 func LoginViewHandler(c *context.Context) {
-	// TODO renew
-
 	if !c.IsLogged {
 		c.Success("login")
 		return
@@ -69,6 +67,7 @@ func redirectWithTicket(c *context.Context) {
 		c.Error(err)
 		return
 	}
+
 	// 解析跳转 URL
 	redirectURL, err := url.Parse(c.ServiceURL)
 	if err != nil {

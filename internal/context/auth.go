@@ -3,9 +3,10 @@ package context
 import (
 	"net/url"
 
-	"github.com/NekoWheel/NekoCAS/internal/db"
 	"github.com/go-macaron/session"
 	"gopkg.in/macaron.v1"
+
+	"github.com/NekoWheel/NekoCAS/internal/db"
 )
 
 type ToggleOptions struct {
@@ -51,5 +52,5 @@ func authenticatedUser(sess session.Store) *db.User {
 	if uid == 0 {
 		return nil
 	}
-	return db.GetUserByID(uid)
+	return db.MustGetUserByID(uid)
 }
