@@ -56,5 +56,5 @@ func ValidateTicket(ticket string) (*User, *Service, bool) {
 
 	user := MustGetUserByID(uint(uid))
 	service, err := GetServiceByID(uint(sid))
-	return user, service, err != nil
+	return user, service, err == nil
 }
