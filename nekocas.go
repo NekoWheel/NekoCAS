@@ -27,5 +27,9 @@ func main() {
 		log.Fatal("Failed to connect to Redis: %v", err)
 	}
 
+	if conf.Ldap.Enabled {
+		go db.AutoSyncLdap()
+	}
+
 	web.Run()
 }

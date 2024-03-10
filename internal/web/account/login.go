@@ -47,8 +47,8 @@ func LoginActionHandler(c *context.Context, f form.Login) {
 	c.User = u
 	_ = c.Session.Set("uid", u.ID)
 
-	// 判断用户是否已经激活。
-	if !c.User.IsActive {
+	// 判断用户是否已经激活，Ldap用户跳过激活。
+	if !c.User.IsLdap && !c.User.IsActive {
 		c.Redirect("/")
 		return
 	}

@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"gorm.io/gorm"
 
+	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/NekoWheel/NekoCAS/internal/helper"
 )
 
@@ -29,6 +30,7 @@ type User struct {
 
 	IsActive bool
 	IsAdmin  bool
+	IsLdap   bool
 }
 
 // EncodePassword 对密码进行加盐处理。
@@ -98,8 +100,10 @@ func CreateUser(u *User) error {
 	}
 
 	u.Avatar = helper.HashEmail(u.Email)
-	u.Salt = GetUserSalt()
-	u.EncodePassword()
+	if !u.IsLdap {
+		u.Salt = GetUserSalt()
+		u.EncodePassword()
+	}
 
 	if err := db.Create(u).Error; err != nil {
 		return errors.Wrap(err, "添加用户")
@@ -116,9 +120,20 @@ func UserAuthenticate(email string, password string) (*User, error) {
 		return nil, ErrBadCredential
 	}
 
-	if !user.ValidatePassword(password) {
-		return nil, ErrBadCredential
+	if conf.Ldap.Enabled && user.IsLdap {
+		ok, err := ldapAuthenticate(email, password)
+		if err != nil {
+			return nil, errors.Wrap(err, "ldap auth")
+		}
+		if !ok {
+			return nil, ErrBadCredential
+		}
+	} else {
+		if !user.ValidatePassword(password) {
+			return nil, ErrBadCredential
+		}
 	}
+
 	return user, nil
 }
 
