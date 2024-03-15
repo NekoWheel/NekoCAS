@@ -47,7 +47,7 @@ type MailSegment struct {
 var Ldap LdapSegment
 
 type LdapSegment struct {
-	Enabled      bool   `toml:"enable"`
+	Enabled      bool   `toml:"enabled"`
 	URL          string `toml:"url"`
 	BindDN       string `toml:"bind_dn"`
 	BindPassword string `toml:"bind_password"`

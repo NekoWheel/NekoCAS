@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"strings"
 	"unicode/utf8"
 
@@ -123,7 +124,8 @@ func UserAuthenticate(email string, password string) (*User, error) {
 	if conf.Ldap.Enabled && user.IsLdap {
 		ok, err := ldapAuthenticate(email, password)
 		if err != nil {
-			return nil, errors.Wrap(err, "ldap auth")
+			log.Println("ldap auth error:", err)
+			return nil, ErrBadCredential
 		}
 		if !ok {
 			return nil, ErrBadCredential
@@ -251,6 +253,17 @@ func IsEmailUsed(email string) bool {
 	}
 	var u User
 	err := db.Model(&User{}).Where(&User{Email: email}).First(&u).Error
+	return err == nil
+}
+
+// IsNickNameUsed 检查用户昵称是否重复。
+// 受历史原因影响，仅用于LDAP同步时检查用户昵称是否重复。
+func IsNickNameUsed(name string) bool {
+	if name == "" {
+		return false
+	}
+	var u User
+	err := db.Model(&User{}).Where(&User{NickName: name}).First(&u).Error
 	return err == nil
 }
 

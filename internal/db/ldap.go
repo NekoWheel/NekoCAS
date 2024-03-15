@@ -31,10 +31,14 @@ func AutoSyncLdap() {
 		log.Println("parse time duration error, ldap sync is not working")
 	}
 
-	syncLdap()
+	if err := syncLdap(); err != nil {
+		log.Println("sync ldap error:", err)
+	}
 	t := time.NewTicker(dur)
 	for range t.C {
-		syncLdap()
+		if err := syncLdap(); err != nil {
+			log.Println("sync ldap error:", err)
+		}
 	}
 }
 
@@ -55,13 +59,17 @@ func syncLdap() error {
 
 	for _, e := range res.Entries {
 		email := strings.ToLower(e.GetAttributeValue(conf.Ldap.Mapping.Email))
-		if !IsEmailUsed(email) {
+		nickname := e.GetAttributeValue(conf.Ldap.Mapping.Nickname)
+		if !IsEmailUsed(email) && !IsNickNameUsed(nickname) {
 			user := &User{
-				NickName: e.GetAttributeValue(conf.Ldap.Mapping.Nickname),
+				NickName: nickname,
 				Email:    email,
 				IsLdap:   true,
+				IsActive: true,
 			}
-			CreateUser(user)
+			if err := CreateUser(user); err != nil {
+				log.Println("create user error:", err)
+			}
 		}
 	}
 	return nil
@@ -105,5 +113,5 @@ func sanitizedUserQuery(email string) (string, error) {
 		return "", fmt.Errorf("'%s' contains invalid query characters. Aborting.", email)
 	}
 
-	return fmt.Sprintf(conf.Ldap.UserFilter), nil
+	return fmt.Sprintf(conf.Ldap.UserFilter, email), nil
 }

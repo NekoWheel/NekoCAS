@@ -31,6 +31,6 @@ base_dn = "dc=example,dc=com"
 sync_interval = "24h"
 
 [ldap.mapping]
-nickname = "cn"
+nickname = "uid"
 email = "mail"
 avatar = "avatar"
