@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"strings"
 	"unicode/utf8"
 
@@ -14,6 +15,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"gorm.io/gorm"
 
+	"github.com/NekoWheel/NekoCAS/internal/conf"
 	"github.com/NekoWheel/NekoCAS/internal/helper"
 )
 
@@ -29,6 +31,7 @@ type User struct {
 
 	IsActive bool
 	IsAdmin  bool
+	IsLdap   bool
 }
 
 // EncodePassword 对密码进行加盐处理。
@@ -98,8 +101,10 @@ func CreateUser(u *User) error {
 	}
 
 	u.Avatar = helper.HashEmail(u.Email)
-	u.Salt = GetUserSalt()
-	u.EncodePassword()
+	if !u.IsLdap {
+		u.Salt = GetUserSalt()
+		u.EncodePassword()
+	}
 
 	if err := db.Create(u).Error; err != nil {
 		return errors.Wrap(err, "添加用户")
@@ -116,9 +121,21 @@ func UserAuthenticate(email string, password string) (*User, error) {
 		return nil, ErrBadCredential
 	}
 
-	if !user.ValidatePassword(password) {
-		return nil, ErrBadCredential
+	if conf.Ldap.Enabled && user.IsLdap {
+		ok, err := ldapAuthenticate(email, password)
+		if err != nil {
+			log.Println("ldap auth error:", err)
+			return nil, ErrBadCredential
+		}
+		if !ok {
+			return nil, ErrBadCredential
+		}
+	} else {
+		if !user.ValidatePassword(password) {
+			return nil, ErrBadCredential
+		}
 	}
+
 	return user, nil
 }
 
@@ -236,6 +253,17 @@ func IsEmailUsed(email string) bool {
 	}
 	var u User
 	err := db.Model(&User{}).Where(&User{Email: email}).First(&u).Error
+	return err == nil
+}
+
+// IsNickNameUsed 检查用户昵称是否重复。
+// 受历史原因影响，仅用于LDAP同步时检查用户昵称是否重复。
+func IsNickNameUsed(name string) bool {
+	if name == "" {
+		return false
+	}
+	var u User
+	err := db.Model(&User{}).Where(&User{NickName: name}).First(&u).Error
 	return err == nil
 }
 

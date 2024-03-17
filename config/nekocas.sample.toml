@@ -20,3 +20,17 @@ account = ""
 password = ""
 smtp = ""
 port = 465
+
+[ldap]
+enabled = false
+url= "ldap://127.0.0.1"
+bind_dn = "cn=readonly,dc=example,dc=com"
+bind_password = "password"
+user_filter = "(email=%s)"
+base_dn = "dc=example,dc=com"
+sync_interval = "24h"
+
+[ldap.mapping]
+nickname = "uid"
+email = "mail"
+avatar = "avatar"

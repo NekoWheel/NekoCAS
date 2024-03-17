@@ -44,6 +44,23 @@ type MailSegment struct {
 	Port     int    `toml:"port"`
 }
 
+var Ldap LdapSegment
+
+type LdapSegment struct {
+	Enabled      bool   `toml:"enabled"`
+	URL          string `toml:"url"`
+	BindDN       string `toml:"bind_dn"`
+	BindPassword string `toml:"bind_password"`
+	UserFilter   string `toml:"user_filter"`
+	BaseDN       string `toml:"base_dn"`
+	SyncInterval string `toml:"sync_interval"`
+	Mapping      struct {
+		Nickname string `toml:"nickname"`
+		Email    string `toml:"email"`
+		Avatar   string `toml:"avatar"`
+	} `toml:"mapping"`
+}
+
 // Load 从配置文件中加载配置。
 func Load() error {
 	var config struct {
@@ -51,6 +68,7 @@ func Load() error {
 		MySQL MySQLSegment `toml:"mysql"`
 		Redis RedisSegment `toml:"redis"`
 		Mail  MailSegment  `toml:"mail"`
+		Ldap  LdapSegment  `toml:"ldap"`
 	}
 
 	_, err := toml.DecodeFile("./config/nekocas.toml", &config)
@@ -62,6 +80,7 @@ func Load() error {
 	MySQL = config.MySQL
 	Redis = config.Redis
 	Mail = config.Mail
+	Ldap = config.Ldap
 
 	return nil
 }
